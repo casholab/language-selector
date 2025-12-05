@@ -1,0 +1,30 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--ls-btn-bg);
+  border: 1px solid var(--ls-btn-border);
+  border-radius: var(--ls-radius);
+  color: var(--ls-fg);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.btn:hover {
+  background: var(--ls-btn-bg-hover);
+  border-color: var(--ls-border-hover);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ls-border-focus);
+  outline-offset: 2px;
+}
+
+.sm {
+  padding: 0.5rem;
+}
+

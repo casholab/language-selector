@@ -1,0 +1,132 @@
+/* Honestly I feel like there is a better way to do this but this works for now??*/
+
+
+/* Language Selector CSS Variables
+ * Override these variables to customize the appearance.
+ * Apply .dark or .light class to any parent element to force a theme.
+ */
+
+:root {
+	color-scheme: light dark;
+
+	/* Light theme values */
+	--ls-light-bg: #f3f3f3;
+	--ls-light-bg-hover: #f4f4f5;
+	--ls-light-bg-selected: #eff6ff;
+	--ls-light-fg: #18181b;
+	--ls-light-fg-muted: #71717a;
+	--ls-light-border: #e4e4e7;
+	--ls-light-border-hover: #a1a1aa;
+	--ls-light-btn-bg: #ffffff;
+	--ls-light-btn-bg-hover: #f4f4f5;
+	--ls-light-btn-border: #e4e4e7;
+	--ls-light-input-bg: #fafafa;
+	--ls-light-input-border: #e4e4e7;
+	--ls-light-modal-bg: #ffffff;
+	--ls-light-modal-border: #e4e4e7;
+	--ls-light-modal-overlay: rgba(0, 0, 0, 0.4);
+	--ls-light-modal-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25), 0 8px 20px -8px rgba(0, 0, 0, 0.1);
+
+	/* Dark theme values */
+	--ls-dark-bg: #27272a;
+	--ls-dark-bg-hover: #3f3f46;
+	--ls-dark-bg-selected: #3f3f46;
+	--ls-dark-fg: #fafafa;
+	--ls-dark-fg-muted: #a1a1aa;
+	--ls-dark-border: #3f3f46;
+	--ls-dark-border-hover: #52525b;
+	--ls-dark-btn-bg: #18181b;
+	--ls-dark-btn-bg-hover: #27272a;
+	--ls-dark-btn-border: #3f3f46;
+	--ls-dark-input-bg: #18181b;
+	--ls-dark-input-border: #3f3f46;
+	--ls-dark-modal-bg: #09090b;
+	--ls-dark-modal-border: #27272a;
+	--ls-dark-modal-overlay: rgba(0, 0, 0, 0.7);
+	--ls-dark-modal-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.6), 0 8px 20px -8px rgba(0, 0, 0, 0.4);
+
+	/* Shared values */
+	--ls-border-selected: #3b82f6;
+	--ls-border-focus: #3b82f6;
+	--ls-radius: 0.5rem;
+	--ls-radius-lg: 0.75rem;
+	--ls-gap: 0.75rem;
+	--ls-padding: 0.75rem;
+
+	/* Active theme (defaults to light) */
+	--ls-bg: var(--ls-light-bg);
+	--ls-bg-hover: var(--ls-light-bg-hover);
+	--ls-bg-selected: var(--ls-light-bg-selected);
+	--ls-fg: var(--ls-light-fg);
+	--ls-fg-muted: var(--ls-light-fg-muted);
+	--ls-border: var(--ls-light-border);
+	--ls-border-hover: var(--ls-light-border-hover);
+	--ls-btn-bg: var(--ls-light-btn-bg);
+	--ls-btn-bg-hover: var(--ls-light-btn-bg-hover);
+	--ls-btn-border: var(--ls-light-btn-border);
+	--ls-input-bg: var(--ls-light-input-bg);
+	--ls-input-border: var(--ls-light-input-border);
+	--ls-modal-bg: var(--ls-light-modal-bg);
+	--ls-modal-border: var(--ls-light-modal-border);
+	--ls-modal-overlay: var(--ls-light-modal-overlay);
+	--ls-modal-shadow: var(--ls-light-modal-shadow);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--ls-bg: var(--ls-dark-bg);
+		--ls-bg-hover: var(--ls-dark-bg-hover);
+		--ls-bg-selected: var(--ls-dark-bg-selected);
+		--ls-fg: var(--ls-dark-fg);
+		--ls-fg-muted: var(--ls-dark-fg-muted);
+		--ls-border: var(--ls-dark-border);
+		--ls-border-hover: var(--ls-dark-border-hover);
+		--ls-btn-bg: var(--ls-dark-btn-bg);
+		--ls-btn-bg-hover: var(--ls-dark-btn-bg-hover);
+		--ls-btn-border: var(--ls-dark-btn-border);
+		--ls-input-bg: var(--ls-dark-input-bg);
+		--ls-input-border: var(--ls-dark-input-border);
+		--ls-modal-bg: var(--ls-dark-modal-bg);
+		--ls-modal-border: var(--ls-dark-modal-border);
+		--ls-modal-overlay: var(--ls-dark-modal-overlay);
+		--ls-modal-shadow: var(--ls-dark-modal-shadow);
+	}
+}
+
+.dark {
+	--ls-bg: var(--ls-dark-bg);
+	--ls-bg-hover: var(--ls-dark-bg-hover);
+	--ls-bg-selected: var(--ls-dark-bg-selected);
+	--ls-fg: var(--ls-dark-fg);
+	--ls-fg-muted: var(--ls-dark-fg-muted);
+	--ls-border: var(--ls-dark-border);
+	--ls-border-hover: var(--ls-dark-border-hover);
+	--ls-btn-bg: var(--ls-dark-btn-bg);
+	--ls-btn-bg-hover: var(--ls-dark-btn-bg-hover);
+	--ls-btn-border: var(--ls-dark-btn-border);
+	--ls-input-bg: var(--ls-dark-input-bg);
+	--ls-input-border: var(--ls-dark-input-border);
+	--ls-modal-bg: var(--ls-dark-modal-bg);
+	--ls-modal-border: var(--ls-dark-modal-border);
+	--ls-modal-overlay: var(--ls-dark-modal-overlay);
+	--ls-modal-shadow: var(--ls-dark-modal-shadow);
+}
+
+.light {
+	--ls-bg: var(--ls-light-bg);
+	--ls-bg-hover: var(--ls-light-bg-hover);
+	--ls-bg-selected: var(--ls-light-bg-selected);
+	--ls-fg: var(--ls-light-fg);
+	--ls-fg-muted: var(--ls-light-fg-muted);
+	--ls-border: var(--ls-light-border);
+	--ls-border-hover: var(--ls-light-border-hover);
+	--ls-btn-bg: var(--ls-light-btn-bg);
+	--ls-btn-bg-hover: var(--ls-light-btn-bg-hover);
+	--ls-btn-border: var(--ls-light-btn-border);
+	--ls-input-bg: var(--ls-light-input-bg);
+	--ls-input-border: var(--ls-light-input-border);
+	--ls-modal-bg: var(--ls-light-modal-bg);
+	--ls-modal-border: var(--ls-light-modal-border);
+	--ls-modal-overlay: var(--ls-light-modal-overlay);
+	--ls-modal-shadow: var(--ls-light-modal-shadow);
+}

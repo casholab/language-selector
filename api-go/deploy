@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source /Users/carson/main/srv/casholab/.env
+
+set -e
+
+echo "Building language-selector-api"
+GOOS=linux GOARCH=amd64 go build -o language-selector-api
+
+echo "Sending language-selector-api to server"
+rsync -av --ipv6 --progress -e "ssh -i $KEY_FILE" language-selector-api "$USER@[$SERVER_IP]:/srv/language-selector-api/language-selector-api"
+
+echo "Restarting language-selector-api"
+ssh -i "$KEY_FILE" "$USER@$SERVER_IP" "sudo systemctl restart language-selector-api"
+
+echo "Done"

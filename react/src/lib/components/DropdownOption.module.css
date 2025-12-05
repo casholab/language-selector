@@ -1,0 +1,72 @@
+.variantContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  align-items: flex-end;
+}
+
+.option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.option:hover {
+  background: var(--ls-bg-hover);
+}
+
+.option.selected {
+  background: var(--ls-bg-selected);
+}
+
+.flag {
+  height: 20px;
+  max-width: 40px;
+  object-fit: contain;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--ls-border);
+}
+
+.text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex-shrink: 0;
+  width: fit-content;
+}
+
+.native {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ls-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.english {
+  font-size: 0.75rem;
+  color: var(--ls-fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.variant {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: var(--ls-fg-muted);
+  padding: 0.125rem 0.375rem;
+  background: var(--ls-bg);
+  border-radius: 0.25rem;
+  width: fit-content;
+}
+

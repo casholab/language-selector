@@ -1,0 +1,1 @@
+{"version":3,"file":"LanguageIcon.d.ts","sourceRoot":"","sources":["../../src/lib/icons/LanguageIcon.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,UAAU,SAAS;IACjB,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,MAAM,CAAC,EAAE,MAAM,CAAC;IAChB,KAAK,CAAC,EAAE,MAAM,CAAC;CAChB;AAED,eAAO,MAAM,YAAY,EAAE,KAAK,CAAC,EAAE,CAAC,SAAS,CAiB5C,CAAC"}

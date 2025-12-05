@@ -1,0 +1,27 @@
+.selected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.native {
+  font-weight: 600;
+  font-size: 2rem;
+  color: var(--ls-fg);
+}
+
+.english {
+  font-size: 1.25rem;
+  color: var(--ls-fg-muted);
+}
+
+.scriptLocal,
+.regionLocal {
+  opacity: 0.75;
+  margin-left: 0.25rem;
+}
+

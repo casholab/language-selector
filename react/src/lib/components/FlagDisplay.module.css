@@ -1,0 +1,73 @@
+.flags {
+  flex-shrink: 0;
+}
+
+.flag {
+  display: block;
+  object-fit: contain;
+  border-radius: 5%;
+  filter: drop-shadow(0 0 1px var(--ls-border));
+}
+
+/* Size: small (dropdown) */
+.sm.single {
+  width: 20px;
+  height: 14px;
+}
+
+.sm.single .flag {
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+/* Size: medium (default, modal list) */
+.md {
+  margin: auto 0;
+}
+
+.md.single {
+  width: 32px;
+  height: 22px;
+}
+
+.md.single .flag {
+  width: 32px;
+  height: 22px;
+}
+
+.md.row {
+  display: flex;
+  gap: 6px;
+  height: 22px;
+}
+
+.md.row .flag {
+  height: 22px;
+  max-width: 36px;
+}
+
+.md.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  height: 40px;
+}
+
+.md.grid .flag {
+  height: 16px;
+  max-width: 24px;
+}
+
+/* Size: large (selected display) */
+.lg {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.lg .flag {
+  height: 1.5rem;
+}
+

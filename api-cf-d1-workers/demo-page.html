@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Casho Language Selector Demo</title>
+	<style>
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		body {
+			font-family: system-ui, -apple-system, sans-serif;
+			min-height: 100vh;
+			background: #ffffff;
+			color: #18181b;
+			padding: 2rem;
+		}
+		.container { max-width: 800px; margin: 0 auto; }
+		h1 { font-size: 2rem; margin-bottom: 0.5rem; color: #18181b; }
+		p { color: #71717a; margin-bottom: 2rem; }
+		.demo-section {
+			background: #fafafa;
+			border: 1px solid #e4e4e7;
+			border-radius: 1rem;
+			padding: 1.5rem;
+			margin-bottom: 1.5rem;
+		}
+		.demo-section h2 {
+			font-size: 0.875rem;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			color: #71717a;
+			margin-bottom: 1rem;
+		}
+		.demo-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+		.output {
+			margin-top: 1rem;
+			padding: 0.75rem 1rem;
+			background: #f4f4f5;
+			border-radius: 0.5rem;
+			font-family: 'SF Mono', Monaco, monospace;
+			font-size: 0.875rem;
+			color: #18181b;
+		}
+		.output span { color: #71717a; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Language Selector Demo</h1>
+		<p>Embeddable language picker component — just add a script tag and a div.</p>
+
+		<div class="demo-section">
+			<h2>Modal Mode (Default)</h2>
+			<div class="demo-row">
+				<div class="casho-ls"
+					languages="en,es,fr,de,it,pt-BR,zh-TW,zh-CN,ja,ko"
+					flag-mode="single"
+					mode="modal"
+					button-size="lg"
+					show-english-name="true"
+					theme="dark"
+					callback="onModalSelect">
+				</div>
+			</div>
+			<div class="output">
+				<span>Selected:</span> <span id="modal-output">none</span>
+			</div>
+		</div>
+
+		<div class="demo-section">
+			<h2>Dropdown Mode</h2>
+			<div class="demo-row">
+				<div class="casho-ls"
+					languages="en,es,fr,zh-Hans,zh-Hant,ja"
+					flag-mode="all"
+					mode="dropdown"
+					button-size="lg"
+					callback="onDropdownSelect">
+				</div>
+			</div>
+			<div class="output">
+				<span>Selected:</span> <span id="dropdown-output">none</span>
+			</div>
+		</div>
+
+		<div class="demo-section">
+			<h2>Small Button (No Flags)</h2>
+			<div class="demo-row">
+                <div class="casho-ls"
+                languages="en,es,fr,zh-Hans,zh-Hant,ja"
+                flag-mode="none"
+                mode="dropdown"
+                button-size="sm"
+                theme="light"
+                callback="onDropdownSelect">
+            </div>
+			</div>
+			<div class="output">
+				<span>Selected:</span> <span id="small-output">none</span>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function onModalSelect(data) {
+			console.log('[Modal] Language selected:', data);
+			document.getElementById('modal-output').textContent = data.code;
+		}
+		function onDropdownSelect(data) {
+			console.log('[Dropdown] Language selected:', data);
+			document.getElementById('dropdown-output').textContent = data.code;
+		}
+		function onSmallSelect(data) {
+			console.log('[Small] Language selected:', data);
+			document.getElementById('small-output').textContent = data.code;
+		}
+	</script>
+
+	<script src="http://localhost:8787/embed.js" async></script>
+</body>
+</html>

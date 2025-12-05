@@ -1,0 +1,4 @@
+.env
+database.db
+languages-api
+language-selector-api
