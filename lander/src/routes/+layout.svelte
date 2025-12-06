@@ -24,7 +24,7 @@
 	</div>
 	<nav class="testbed-nav-right">
 		<a href="/" class="testbed-nav-link">Home</a>
-		<a href="/testbed" class="testbed-nav-link">Test</a>
+		<a href="/playground" class="testbed-nav-link">Playground</a>
 		<ThemeToggle bind:themeClass />
 	</nav>
 </div>
@@ -33,7 +33,7 @@
 	{@render children()}
 </main>
 <footer>
-	<div> ls.casholab.com | casholab.com - © {new Date().getFullYear()} - All rights reserved - Privacy Policy - Terms of Service</div>
+	<div> <a href="https://ls.casholab.com">ls.casholab.com</a> | <a href="https://casholab.com">casholab.com</a> - © {new Date().getFullYear()} - All rights reserved - Privacy Policy - Terms of Service</div>
 </footer>
 <style>
 	:global(*) {
@@ -46,7 +46,7 @@
 		height: 100%;
 	}
 	main{
-		padding:0 1rem;
+		padding:0 2rem;
 	}
 
 	:global(body) {
@@ -100,7 +100,7 @@
 	}
 	footer{
 		text-align: center;
-		padding: 1rem 0;
+		padding: 1rem
 	}
 	.header-inner{
 		display: flex;
@@ -151,12 +151,12 @@
 
 
 	@media (max-width: 640px) {
-		.testbed-nav {
-			padding: 0.75rem 1rem;
+		.testbed-logo {
+			flex-direction:column;
+		}
+		main{
+			padding:0 1rem;
 		}
 
-		.testbed-logo-text {
-			display: none;
-		}
 	}
 </style>

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source /Users/carson/main/srv/hetzner/.env
+PROJECT_NAME="language-selector-lander"
+set -e
+
+echo "Building $PROJECT_NAME"
+GOOS=linux GOARCH=amd64 go build -o $PROJECT_NAME
+
+echo "Sending $PROJECT_NAME to server"
+rsync -av --progress -e "ssh -i $KEY_FILE" $PROJECT_NAME "$USER@$SERVER_IP:/srv/$PROJECT_NAME/$PROJECT_NAME"
+
+echo "Restarting $PROJECT_NAME"
+ssh -i "$KEY_FILE" "$USER@$SERVER_IP" "sudo systemctl restart $PROJECT_NAME"
+
+echo "Done"
