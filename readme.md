@@ -1,34 +1,90 @@
 # Casho Lab Language Selector Library
-
 This is an open source language selector that fits EVERY language, allowing for optionality in how it is displayed.
 
-Optionaity includes
+Full Landing page at: [ls.casholab.com](https://ls.casholab.com)
 
-- Modal vs Data List
-- Flag vs Flags vs no flags
-- Tiers for scripts and regionalities vs "flat" layout
+## Features
+- Support for 7000+ languages, 400+ endonyms, regions, and scripts
+- Dark mode and light mode
+- Static file support for offline mode
+- Efficient loading with batch loading for sequential fetch environments
+- Customizable display options
 
-
-Supported Frameworks
+## Supported Frameworks
 1. HTML/JS/CSS (default web standards)
-2. React
-3. Svelte
+   - [Embed Component API (Go)](api-go/embed-component)
+   - lsapi.casholab.com/embed
+2. [React](react)
+3. [Svelte](svelte)
 
-- only these will be supported, svelte as I belive its the best current framework, html as its most standard and portable, react as its most commonly used on new projects
+## Language Codes
+Uses BCP-47 language codes (with fallback support for names and endonyms)
 
-Challenges for languages selectors
-- What is the most globally recongizable icons for "language", "localization" and "country" 
-- Do we display the names of the languages in the language itself (endonym), in english. 
-- What if a lanaguage has multiple written scripts
-- What if a language has multiple regions? 
+Format: `language-script-region-variants/extensions`
+
+| Type | Examples |
+|------|----------|
+| Basic | `en`, `es`, `fr` |
+| With region | `es-CO`, `es-ES`, `zh-TW` |
+| With script | `en-Latn`, `sr-Latn`, `sr-Cyrl` |
+| With script and region | `zh-Hans-CN`, `zh-Hans-TW` |
+
+See [MDN BCP 47 documentation](https://developer.mozilla.org/en-US/docs/Glossary/BCP_47_language_tag) or [CLDR BCP47 Extension](https://cldr.unicode.org/index/bcp47-extension) for more information.
+
+## Display Options
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| Layout | modal, dropdown | Show as modal overlay or inline dropdown |
+| Flag mode | none, single, all | How flags are displayed for languages with multiple regions |
+| Button size | small, large | Size of the selector button |
+| Show English name | true, false | Display English name alongside native name |
+
+## Configuration
+
+### API Endpoint
+The default public API endpoint is at `lsapi.casholab.com`
+
+This is a public endpoint maintained on a best-effort basis. For 100% reliability, use a static file which can be generated via the `/file/generate` endpoint.
+
+### Custom API Hosting
+You can host your own API endpoint using:
+- [Cloudflare Workers (D1)](api-cf-d1-workers)
+- [Go Server](api-go)
+
+### Load Options
+
+| Option | Description |
+|--------|-------------|
+| API URL | Custom API endpoint URL |
+| Flag load mode | `single` (individual requests) or `multi` (batch load all flags) |
+
+### Flag Considerations
+Flags are large assets that can be loaded remotely or embedded as SVGs in a JSON file. By default, flags load through individual requests. 
+
+For environments that don't allow concurrent requests (like some mobile environments), use batch loading to fetch all flags in a single request (~6MB of SVG files). This can improve load speed despite using more data.
+
+## Styling
+
+Override styles by targeting the CSS classes with `!important` or by modifying the CSS directly.
+
+### Fonts
+Fonts are not included. We recommend using a font that supports your target scripts and languages.
+
+Recommended: [Noto Sans](https://fonts.google.com/noto/sans/) for wide script coverage.
+
+### Colors
+Colors can be overridden via CSS variables or by targeting specific classes.
+
+## Data
+We use [CashoLab Languages-Data](https://github.com/casholab/languages-data) compiled list of languages which follow ISO standards for different codes, regions, and script standards.
+
+## Issues
+Report issues at [github.com/casholab/language-selector/issues](https://github.com/casholab/language-selector/issues)
 
 
+## CashoLab
 
+Casho Lab is an ai research lab focused on multilingual education.
 
-We need to make a script that interprets the browser language settings and chooses the best language based on a a list of languages  which are supported.
-
-
-
-# Data
-We use cashO lab compiled list of langauges which follow iso standards for different codes, regions, and script standards. 
-
+See our website to learn more at [casholab.com](https://casholab.com)
