@@ -30,7 +30,7 @@ async function ae(e, t = "multi", n = J) {
   if (s.length === 0)
     return e;
   let o;
-  return t === "single" ? o = await le(n) : o = await me(s, n), { ...e, flags: o };
+  return t === "single" ? o = await le(n) : o = await he(s, n), { ...e, flags: o };
 }
 function ce(e) {
   const t = /* @__PURE__ */ new Set();
@@ -54,7 +54,7 @@ async function de(e, t) {
   }
   return n.text();
 }
-async function me(e, t) {
+async function he(e, t) {
   const n = {}, s = await Promise.all(
     e.map(async (o) => {
       const i = await de(o, t);
@@ -65,7 +65,7 @@ async function me(e, t) {
     i && (n[o] = i);
   return n;
 }
-const he = "1.0.0";
+const me = "1.0.0";
 function pe(e) {
   let t;
   if (typeof e == "string")
@@ -101,8 +101,8 @@ function B(e) {
     if (o && typeof o == "object") {
       const a = o.data;
       if (a) {
-        const d = typeof a.code == "string" && a.code.length > 0, p = typeof a.name == "string" && a.name.length > 0, _ = typeof a.endonym == "string" && a.endonym.length > 0;
-        if (d && (p || _)) {
+        const d = typeof a.code == "string" && a.code.length > 0, p = typeof a.name == "string" && a.name.length > 0, v = typeof a.endonym == "string" && a.endonym.length > 0;
+        if (d && (p || v)) {
           s = !0;
           break;
         }
@@ -125,7 +125,7 @@ async function zt(e, t, n) {
     languageData: s,
     meta: {
       generatedTimestamp: (/* @__PURE__ */ new Date()).toISOString(),
-      version: he
+      version: me
     }
   };
 }
@@ -143,36 +143,36 @@ function fe(e) {
   }
   return n;
 }
-function ve(e, t, n) {
+function _e(e, t, n) {
   var s;
   return n === "none" || !t ? [] : e.region ? [e.region.toLowerCase()] : e.script && ((s = t.scriptFlags) != null && s[e.script]) ? t.scriptFlags[e.script] : t.flags ?? [];
 }
 function X(e) {
   return "data:image/svg+xml," + encodeURIComponent(e);
 }
-function _e(e, t) {
+function ve(e, t) {
   return e.resolved.map((n) => {
-    var h, N;
+    var m, w;
     const s = fe(n), o = e.data[s.lang];
-    let i, a, d, p, _ = (o == null ? void 0 : o.data.endonym) ?? "";
-    if (s.region && ((h = o == null ? void 0 : o.regionData) != null && h[s.region])) {
-      const m = o.regionData[s.region];
-      i = m.regionNameEnglish, a = m.regionNameNative;
+    let i, a, d, p, v = (o == null ? void 0 : o.data.endonym) ?? "";
+    if (s.region && ((m = o == null ? void 0 : o.regionData) != null && m[s.region])) {
+      const h = o.regionData[s.region];
+      i = h.regionNameEnglish, a = h.regionNameNative;
     }
-    if (s.script && ((N = o == null ? void 0 : o.scriptData) != null && N[s.script])) {
-      const m = o.scriptData[s.script];
-      d = m.scriptNameEnglish, p = m.scriptNameLocal, _ = m.languageInScript || _;
+    if (s.script && ((w = o == null ? void 0 : o.scriptData) != null && w[s.script])) {
+      const h = o.scriptData[s.script];
+      d = h.scriptNameEnglish, p = h.scriptNameLocal, v = h.languageInScript || v;
     }
-    const u = ve(s, o, t);
+    const g = _e(s, o, t);
     return {
       code: n,
       name: (o == null ? void 0 : o.data.name) ?? n,
-      endonym: _,
+      endonym: v,
       regionNameEnglish: i,
       regionNameNative: a,
       scriptNameEnglish: d,
       scriptNameLocal: p,
-      flagCodes: u
+      flagCodes: g
     };
   });
 }
@@ -203,7 +203,7 @@ const Q = ({
       }
     )
   }
-), Ne = ({
+), we = ({
   width: e = "24",
   height: t = "24",
   color: n = "currentColor"
@@ -241,7 +241,7 @@ const Q = ({
       }
     )
   }
-), we = ({
+), Ne = ({
   width: e = "24",
   height: t = "24",
   color: n = "currentColor"
@@ -262,9 +262,9 @@ const Q = ({
       /* @__PURE__ */ r("line", { x1: "6", y1: "6", x2: "18", y2: "18" })
     ]
   }
-), ge = "_close_10rmb_1", ue = "_outer_10rmb_22", Le = "_overlay_10rmb_32", Ce = "_container_10rmb_44", ye = "_body_10rmb_59", S = {
-  close: ge,
-  outer: ue,
+), ue = "_close_10rmb_1", ge = "_outer_10rmb_22", Le = "_overlay_10rmb_32", Ce = "_container_10rmb_44", ye = "_body_10rmb_59", S = {
+  close: ue,
+  outer: ge,
   overlay: Le,
   container: Ce,
   body: ye
@@ -303,7 +303,7 @@ const Q = ({
           className: S.close,
           onClick: e,
           "aria-label": "close",
-          children: /* @__PURE__ */ r(we, {})
+          children: /* @__PURE__ */ r(Ne, {})
         }
       ),
       s
@@ -380,7 +380,7 @@ const Q = ({
       o
     ) : null;
   }) });
-}, Me = "_option_1mvma_1", Oe = "_selected_1mvma_20", Te = "_content_1mvma_25", He = "_native_1mvma_29", Re = "_english_1mvma_30", qe = "_meta_1mvma_45", Ae = "_metaNative_1mvma_52", Ue = "_metaEnglish_1mvma_63", C = {
+}, Me = "_option_1uwwe_1", Oe = "_selected_1uwwe_21", Te = "_content_1uwwe_26", He = "_native_1uwwe_30", Re = "_english_1uwwe_31", qe = "_meta_1uwwe_46", Ae = "_metaNative_1uwwe_53", Ue = "_metaEnglish_1uwwe_64", C = {
   option: Me,
   selected: Oe,
   content: Te,
@@ -482,18 +482,18 @@ const Q = ({
   isOpen: a,
   showEnglishName: d = !0,
   showFlags: p = !1,
-  selectLanguage: _,
-  close: u
+  selectLanguage: v,
+  close: g
 }) => {
-  const [h, N] = y(""), m = () => {
-    u(), N("");
+  const [m, w] = y(""), h = () => {
+    g(), w("");
   }, k = (f) => {
-    _(f), m();
-  }, w = O(
-    () => G(e, h),
-    [e, h]
+    v(f), h();
+  }, N = O(
+    () => G(e, m),
+    [e, m]
   );
-  return a ? /* @__PURE__ */ r(Ee, { close: m, xbutton: !0, bgCloses: !0, children: /* @__PURE__ */ c("div", { className: $.container, children: [
+  return a ? /* @__PURE__ */ r(Ee, { close: h, xbutton: !0, bgCloses: !0, children: /* @__PURE__ */ c("div", { className: $.container, children: [
     /* @__PURE__ */ c("header", { className: $.header, children: [
       /* @__PURE__ */ r(Q, { width: "20", height: "20" }),
       /* @__PURE__ */ r("span", { children: "Select a Language" })
@@ -515,8 +515,8 @@ const Q = ({
         ),
         /* @__PURE__ */ r("hr", { className: $.divider })
       ] }),
-      /* @__PURE__ */ r(Y, { value: h, onChange: N }),
-      /* @__PURE__ */ r("div", { className: $.list, children: e.length > 0 ? w.map((f) => /* @__PURE__ */ r(
+      /* @__PURE__ */ r(Y, { value: m, onChange: w }),
+      /* @__PURE__ */ r("div", { className: $.list, children: e.length > 0 ? N.map((f) => /* @__PURE__ */ r(
         Be,
         {
           language: f,
@@ -527,17 +527,17 @@ const Q = ({
           onClick: () => k(f.code)
         },
         f.code
-      )) : Array.from({ length: o }).map((f, v) => /* @__PURE__ */ r("div", { className: $.placeholder }, v)) })
+      )) : Array.from({ length: o }).map((f, _) => /* @__PURE__ */ r("div", { className: $.placeholder }, _)) })
     ] })
   ] }) }) : null;
-}, it = "_variantContainer_1cgzk_1", at = "_option_1cgzk_8", ct = "_selected_1cgzk_25", lt = "_flag_1cgzk_29", dt = "_text_1cgzk_37", mt = "_native_1cgzk_46", ht = "_english_1cgzk_55", pt = "_variant_1cgzk_1", j = {
+}, it = "_variantContainer_1cgzk_1", at = "_option_1cgzk_8", ct = "_selected_1cgzk_25", lt = "_flag_1cgzk_29", dt = "_text_1cgzk_37", ht = "_native_1cgzk_46", mt = "_english_1cgzk_55", pt = "_variant_1cgzk_1", j = {
   variantContainer: it,
   option: at,
   selected: ct,
   flag: lt,
   text: dt,
-  native: mt,
-  english: ht,
+  native: ht,
+  english: mt,
   variant: pt
 }, ft = ({
   language: e,
@@ -575,13 +575,13 @@ const Q = ({
       ]
     }
   );
-}, vt = "_dropdown_vi1h5_1", _t = "_upward_vi1h5_18", Nt = "_right_vi1h5_25", wt = "_content_vi1h5_30", gt = "_loadingOverlay_vi1h5_38", ut = "_list_vi1h5_54", Lt = "_empty_vi1h5_61", Ct = "_spinner_vi1h5_68", yt = "_error_vi1h5_81", Et = "_placeholder_vi1h5_105", E = {
-  dropdown: vt,
-  upward: _t,
-  right: Nt,
-  content: wt,
-  loadingOverlay: gt,
-  list: ut,
+}, _t = "_dropdown_vi1h5_1", vt = "_upward_vi1h5_18", wt = "_right_vi1h5_25", Nt = "_content_vi1h5_30", ut = "_loadingOverlay_vi1h5_38", gt = "_list_vi1h5_54", Lt = "_empty_vi1h5_61", Ct = "_spinner_vi1h5_68", yt = "_error_vi1h5_81", Et = "_placeholder_vi1h5_105", E = {
+  dropdown: _t,
+  upward: vt,
+  right: wt,
+  content: Nt,
+  loadingOverlay: ut,
+  list: gt,
   empty: Lt,
   spinner: Ct,
   error: yt,
@@ -596,14 +596,14 @@ const Q = ({
   isOpen: a,
   showEnglishName: d = !0,
   showFlags: p = !1,
-  selectLanguage: _,
-  close: u
+  selectLanguage: v,
+  close: g
 }) => {
-  const [h, N] = y(""), [m, k] = y(!1), [w, f] = y(!1), v = V(null), F = b(() => {
-    u(), N("");
-  }, [u]), T = (l) => {
-    _(l), F();
-  }, g = b(
+  const [m, w] = y(""), [h, k] = y(!1), [N, f] = y(!1), _ = V(null), F = b(() => {
+    g(), w("");
+  }, [g]), T = (l) => {
+    v(l), F();
+  }, u = b(
     (l) => {
       l.key === "Escape" && F();
     },
@@ -611,15 +611,15 @@ const Q = ({
   );
   M(() => {
     if (!a) return;
-    const l = (x) => g(x);
+    const l = (x) => u(x);
     return window.addEventListener("keydown", l), () => window.removeEventListener("keydown", l);
-  }, [a, g]), M(() => {
-    if (!a || !v.current) return;
-    const l = v.current.getBoundingClientRect(), x = window.innerHeight, H = window.innerWidth, R = x - l.top, L = l.height;
+  }, [a, u]), M(() => {
+    if (!a || !_.current) return;
+    const l = _.current.getBoundingClientRect(), x = window.innerHeight, H = window.innerWidth, R = x - l.top, L = l.height;
     k(R < L && l.top > L), l.right > H && f(!0);
     const A = (re) => {
       var U;
-      (U = v.current) != null && U.contains(re.target) || F();
+      (U = _.current) != null && U.contains(re.target) || F();
     }, oe = setTimeout(() => {
       window.addEventListener("click", A);
     }, 0);
@@ -628,14 +628,14 @@ const Q = ({
     };
   }, [a, F]);
   const I = O(
-    () => G(e, h),
-    [e, h]
+    () => G(e, m),
+    [e, m]
   );
   return a ? /* @__PURE__ */ r(
     "div",
     {
-      ref: v,
-      className: `${E.dropdown} ${m ? E.upward : ""} ${w ? E.right : ""}`,
+      ref: _,
+      className: `${E.dropdown} ${h ? E.upward : ""} ${N ? E.right : ""}`,
       children: s ? /* @__PURE__ */ c("div", { className: E.error, children: [
         /* @__PURE__ */ r("p", { children: "Failed to load" }),
         /* @__PURE__ */ r("p", { className: E.errorDetails, children: s.message })
@@ -644,11 +644,11 @@ const Q = ({
         /* @__PURE__ */ r(
           Y,
           {
-            value: h,
-            onChange: N,
+            value: m,
+            onChange: w,
             variant: "compact",
             autoFocus: !0,
-            onKeyDown: g
+            onKeyDown: u
           }
         ),
         /* @__PURE__ */ r("div", { className: E.list, children: e.length > 0 ? /* @__PURE__ */ c(D, { children: [
@@ -679,10 +679,10 @@ const Q = ({
   isOpen: a,
   onOpenChange: d,
   onSelection: p,
-  preload: _ = !1
+  preload: v = !1
 }) => {
-  const u = n.showEnglishName ?? !0, h = n.flagMode ?? "none", N = n.isModal ?? !0, [m, k] = y(null), [w, f] = y(null), [v, F] = y(!1), T = b(async () => {
-    if (!(v || m || e)) {
+  const g = n.showEnglishName ?? !0, m = n.flagMode ?? "none", w = n.isModal ?? !0, [h, k] = y(null), [N, f] = y(null), [_, F] = y(!1), T = b(async () => {
+    if (!(_ || h || e)) {
       if (!t || t.length === 0) {
         f(new Error("No languages provided"));
         return;
@@ -697,11 +697,11 @@ const Q = ({
         F(!1);
       }
     }
-  }, [v, m, e, t, n, s]);
+  }, [_, h, e, t, n, s]);
   M(() => {
-    (a || _) && !e && !m && !v && T();
-  }, [a, _, e, m, v, T]);
-  const g = e ?? m, I = v || !g && !w, l = O(() => g ? _e(g, h) : [], [g, h]), x = O(() => o ? l.find((L) => L.code === o) ?? null : null, [o, l]), H = b(
+    (a || v) && !e && !h && !_ && T();
+  }, [a, v, e, h, _, T]);
+  const u = e ?? h, I = _ || !u && !N, l = O(() => u ? ve(u, m) : [], [u, m]), x = O(() => o ? l.find((L) => L.code === o) ?? null : null, [o, l]), H = b(
     (L) => {
       i(L), p == null || p(L);
     },
@@ -709,18 +709,18 @@ const Q = ({
   ), R = b(() => {
     d(!1);
   }, [d]);
-  return N ? /* @__PURE__ */ r(
+  return w ? /* @__PURE__ */ r(
     rt,
     {
       displayLanguages: l,
-      flags: g == null ? void 0 : g.flags,
+      flags: u == null ? void 0 : u.flags,
       isLoading: I,
-      error: w,
+      error: N,
       skeletonCount: t.length,
       selectedEntry: x,
       isOpen: a,
-      showEnglishName: u,
-      showFlags: h !== "none",
+      showEnglishName: g,
+      showFlags: m !== "none",
       selectLanguage: H,
       close: R
     }
@@ -728,14 +728,14 @@ const Q = ({
     $t,
     {
       displayLanguages: l,
-      flags: g == null ? void 0 : g.flags,
+      flags: u == null ? void 0 : u.flags,
       isLoading: I,
-      error: w,
+      error: N,
       skeletonCount: t.length,
       selectedEntry: x,
       isOpen: a,
-      showEnglishName: u,
-      showFlags: h !== "none",
+      showEnglishName: g,
+      showFlags: m !== "none",
       selectLanguage: H,
       close: R
     }
@@ -758,7 +758,7 @@ const Q = ({
       /* @__PURE__ */ r(Q, { width: "18", height: "18" }),
       t === "lg" && /* @__PURE__ */ c(D, { children: [
         /* @__PURE__ */ r("span", { children: e }),
-        /* @__PURE__ */ r(Ne, { width: "16", height: "16" })
+        /* @__PURE__ */ r(we, { width: "16", height: "16" })
       ] })
     ]
   }
@@ -772,28 +772,28 @@ const Q = ({
   onSelectedLanguageChange: o,
   onSelection: i
 }) => {
-  const [a, d] = y(null), [p, _] = y(!1), [u, h] = y(!1), N = s !== void 0, m = N ? s : a, k = b(
-    (w) => {
-      N || d(w), o == null || o(w);
+  const [a, d] = y(null), [p, v] = y(!1), [g, m] = y(!1), w = s !== void 0, h = w ? s : a, k = b(
+    (N) => {
+      w || d(N), o == null || o(N);
     },
-    [N, o]
+    [w, o]
   );
   return !e || e.length === 0 ? (console.error("[LanguageSelector] No languages provided."), null) : /* @__PURE__ */ c("div", { className: se.wrapper, children: [
     /* @__PURE__ */ r(
       ne,
       {
-        onMouseEnter: () => h(!0),
-        onClick: () => _(!p),
+        onMouseEnter: () => m(!0),
+        onClick: () => v(!p),
         size: t.buttonSize
       }
     ),
     /* @__PURE__ */ r(
       te,
       {
-        preload: u,
+        preload: g,
         isOpen: p,
-        onOpenChange: _,
-        selectedLanguage: m,
+        onOpenChange: v,
+        selectedLanguage: h,
         onSelectedLanguageChange: k,
         onSelection: i,
         languages: e,
@@ -809,20 +809,20 @@ const Q = ({
   onSelection: s,
   displayOptions: o
 }) => {
-  const [i, a] = y(null), [d, p] = y(!1), { data: _, displayOptions: u } = O(
+  const [i, a] = y(null), [d, p] = y(!1), { data: v, displayOptions: g } = O(
     () => pe(e),
     [e]
-  ), h = t !== void 0, N = h ? t : i, m = b(
-    (v) => {
-      h || a(v), n == null || n(v);
+  ), m = t !== void 0, w = m ? t : i, h = b(
+    (_) => {
+      m || a(_), n == null || n(_);
     },
-    [h, n]
+    [m, n]
   ), k = b(
-    (v) => {
-      m(v), s == null || s(v);
+    (_) => {
+      h(_), s == null || s(_);
     },
-    [m, s]
-  ), w = o ?? u ?? void 0, f = w == null ? void 0 : w.buttonSize;
+    [h, s]
+  ), N = o ?? g ?? void 0, f = N == null ? void 0 : N.buttonSize;
   return /* @__PURE__ */ c("div", { className: se.wrapper, children: [
     /* @__PURE__ */ r(ne, { onClick: () => p(!d), size: f }),
     /* @__PURE__ */ r(
@@ -830,11 +830,11 @@ const Q = ({
       {
         isOpen: d,
         onOpenChange: p,
-        selectedLanguage: N,
-        onSelectedLanguageChange: m,
+        selectedLanguage: w,
+        onSelectedLanguageChange: h,
         onSelection: k,
-        staticData: _,
-        displayOptions: w
+        staticData: v,
+        displayOptions: N
       }
     )
   ] });
@@ -852,7 +852,7 @@ export {
   Ee as Modal,
   Y as SearchInput,
   Ke as SelectedLanguageDisplay,
-  _e as buildDisplayLanguages,
+  ve as buildDisplayLanguages,
   Dt as downloadStaticDataFile,
   G as filterLanguages,
   zt as generateStaticDataFile,
