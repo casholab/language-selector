@@ -1,6 +1,6 @@
 {
   "name": "language-selector-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A comprehensive language selector component for React with flags, endonyms, light and dark mode support.",
   "keywords": ["language", "selector", "react", "casholab"],
   "license": "MIT",

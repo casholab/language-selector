@@ -294,6 +294,7 @@ export const CSS = `
 .ls-option {
   display: flex;
   align-items: end;
+  justify-content: start;
   gap: 0.75rem;
   padding: var(--ls-padding);
   background: var(--ls-bg);
