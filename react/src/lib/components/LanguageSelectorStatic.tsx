@@ -1,9 +1,7 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { LocalizeButton } from './LocalizeButton';
+import React, { useMemo } from 'react';
 import type { DisplayOptions } from '../types';
 import { loadDataFromFile } from '../language-file';
 import { LanguageSelectorHandler } from './LanguageSelectorHandler';
-import styles from './LanguageSelector.module.css';
 
 interface LanguageSelectorStaticProps {
   staticFileData: string | object;
@@ -15,56 +13,23 @@ interface LanguageSelectorStaticProps {
 
 export const LanguageSelectorStatic: React.FC<LanguageSelectorStaticProps> = ({
   staticFileData,
-  selectedLanguage: controlledSelectedLanguage,
+  selectedLanguage,
   onSelectedLanguageChange,
   onSelection,
   displayOptions: propsDisplayOptions,
 }) => {
-  const [internalSelectedLanguage, setInternalSelectedLanguage] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-
   const { data: staticData, displayOptions: staticDisplayOptions } = useMemo(
     () => loadDataFromFile(staticFileData),
     [staticFileData]
   );
 
-  const isControlled = controlledSelectedLanguage !== undefined;
-  const selectedLanguage = isControlled ? controlledSelectedLanguage : internalSelectedLanguage;
-
-  const handleSelectedLanguageChange = useCallback(
-    (language: string | null) => {
-      if (!isControlled) {
-        setInternalSelectedLanguage(language);
-      }
-      onSelectedLanguageChange?.(language);
-    },
-    [isControlled, onSelectedLanguageChange]
-  );
-
-  const handleSelection = useCallback(
-    (code: string) => {
-      handleSelectedLanguageChange(code);
-      onSelection?.(code);
-    },
-    [handleSelectedLanguageChange, onSelection]
-  );
-
-  const displayOptions = propsDisplayOptions ?? staticDisplayOptions ?? undefined;
-  const buttonSize = displayOptions?.buttonSize;
-
   return (
-    <div className={styles.wrapper}>
-      <LocalizeButton onClick={() => setIsOpen(!isOpen)} size={buttonSize} />
-      <LanguageSelectorHandler
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-        selectedLanguage={selectedLanguage}
-        onSelectedLanguageChange={handleSelectedLanguageChange}
-        onSelection={handleSelection}
-        staticData={staticData}
-        displayOptions={displayOptions}
-      />
-    </div>
+    <LanguageSelectorHandler
+      staticData={staticData}
+      displayOptions={propsDisplayOptions ?? staticDisplayOptions ?? undefined}
+      selectedLanguage={selectedLanguage}
+      onSelectedLanguageChange={onSelectedLanguageChange}
+      onSelection={onSelection}
+    />
   );
 };
-

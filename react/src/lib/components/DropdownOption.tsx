@@ -1,11 +1,9 @@
 import React from 'react';
 import type { DisplayLanguage } from '../language-selector';
-import { svgToDataUri } from '../language-selector';
 import styles from './DropdownOption.module.css';
 
 interface DropdownOptionProps {
   language: DisplayLanguage;
-  flags?: Record<string, string>;
   showFlags?: boolean;
   showEnglishName?: boolean;
   selected?: boolean;
@@ -14,25 +12,19 @@ interface DropdownOptionProps {
 
 export const DropdownOption: React.FC<DropdownOptionProps> = ({
   language,
-  flags,
   showFlags = false,
   showEnglishName = true,
   selected = false,
   onClick,
 }) => {
-  const flagSvg =
-    showFlags && language.flagCodes.length > 0 && flags
-      ? flags[language.flagCodes[0]]
-      : null;
-
   return (
     <button
       className={`${styles.option} ${selected ? styles.selected : ''}`}
       onClick={onClick}
       type="button"
     >
-      {flagSvg && (
-        <img className={styles.flag} src={svgToDataUri(flagSvg)} alt="" />
+      {showFlags && language.flagSvgDataUris.length > 0 && (
+        <img className={styles.flag} src={language.flagSvgDataUris[0]} alt="" />
       )}
       <div className={styles.text}>
         <span className={styles.native}>
@@ -77,4 +69,3 @@ export const DropdownOption: React.FC<DropdownOptionProps> = ({
     </button>
   );
 };
-

@@ -121,6 +121,15 @@ export const CSS = `
   display: inline-block;
 }
 
+.ls-pixel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
 .ls-btn {
   display: inline-flex;
   align-items: center;

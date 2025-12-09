@@ -8,7 +8,7 @@ export interface DisplayLanguage {
   regionNameNative?: string;
   scriptNameEnglish?: string;
   scriptNameLocal?: string;
-  flagCodes: string[];
+  flagSvgDataUris: string[];
 }
 
 export interface ParsedTag {
@@ -55,7 +55,8 @@ export function svgToDataUri(svg: string): string {
 
 export function buildDisplayLanguages(
   languagesData: LanguageLookupResult,
-  flagMode: FlagDisplayMode
+  flagMode: FlagDisplayMode,
+  flags?: Record<string, string>
 ): DisplayLanguage[] {
   return languagesData.resolved.map((resolvedTag) => {
     const parsed = parseTag(resolvedTag);
@@ -81,6 +82,12 @@ export function buildDisplayLanguages(
     }
 
     const flagCodes = getFlagsForEntry(parsed, entry, flagMode);
+    const flagSvgDataUris = flagCodes
+      .map((code) => {
+        const svg = flags?.[code] ?? flags?.[code.toLowerCase()];
+        return svg ? svgToDataUri(svg) : null;
+      })
+      .filter((uri): uri is string => uri !== null);
 
     return {
       code: resolvedTag,
@@ -90,7 +97,7 @@ export function buildDisplayLanguages(
       regionNameNative,
       scriptNameEnglish,
       scriptNameLocal,
-      flagCodes,
+      flagSvgDataUris,
     };
   });
 }
@@ -116,4 +123,3 @@ export function filterLanguages(
         lang.scriptNameLocal.toLowerCase().includes(term))
   );
 }
-

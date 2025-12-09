@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="http://localhost:8080/embed/loader.js" async></script>
+	<title>Language Selector Test</title>
+	<style>
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		body {
+			font-family: system-ui, -apple-system, sans-serif;
+			min-height: 100vh;
+			background: #18181b;
+			color: #fafafa;
+			padding: 2rem;
+		}
+		.container { max-width: 800px; margin: 0 auto; }
+		h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+		p { color: #a1a1aa; margin-bottom: 2rem; }
+		.demo-section {
+			background: #27272a;
+			border: 1px solid #3f3f46;
+			border-radius: 0.75rem;
+			padding: 1.5rem;
+			margin-bottom: 1.5rem;
+		}
+		.demo-section h2 {
+			font-size: 0.8rem;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			color: #71717a;
+			margin-bottom: 1rem;
+		}
+		.demo-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+		.output {
+			margin-top: 1rem;
+			padding: 0.75rem 1rem;
+			background: #09090b;
+			border-radius: 0.5rem;
+			font-family: 'SF Mono', Monaco, monospace;
+			font-size: 0.875rem;
+		}
+		.output span { color: #71717a; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Language Selector Test</h1>
+		<p>Testing the embed component with local API on port 8080</p>
+
+		<div class="demo-section">
+			<h2>Modal Mode (Default)</h2>
+			<div class="demo-row">
+				<div casholab-ls
+					languages="en,es,fr,de,ja,ko,zh-CN,zh-TW,pt-BR"
+					flag-mode="single"
+					api-url="http://localhost:8080"
+					callback="onModalSelect">
+				</div>
+			</div>
+			<div class="output">
+				<span>Selected:</span> <span id="modal-output">none</span>
+			</div>
+		</div>
+
+		<div class="demo-section">
+			<h2>Dropdown Mode</h2>
+			<div class="demo-row">
+				<div casholab-ls
+					languages="en,es,fr,zh-Hans,zh-Hant,ja"
+					flag-mode="all"
+					is-modal="false"
+					api-url="http://localhost:8080"
+					callback="onDropdownSelect">
+				</div>
+			</div>
+			<div class="output">
+				<span>Selected:</span> <span id="dropdown-output">none</span>
+			</div>
+		</div>
+
+		<div class="demo-section">
+			<h2>Small Button (No Flags)</h2>
+			<div class="demo-row">
+				<div casholab-ls
+					languages="en,es,fr,de,it,pt"
+					flag-mode="none"
+					is-modal="false"
+					button-size="sm"
+					api-url="http://localhost:8080"
+					callback="onSmallSelect">
+				</div>
+			</div>
+			<div class="output">
+				<span>Selected:</span> <span id="small-output">none</span>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function onModalSelect(code) {
+			console.log('[Modal] Selected:', code);
+			document.getElementById('modal-output').textContent = code;
+		}
+		function onDropdownSelect(code) {
+			console.log('[Dropdown] Selected:', code);
+			document.getElementById('dropdown-output').textContent = code;
+		}
+		function onSmallSelect(code) {
+			console.log('[Small] Selected:', code);
+			document.getElementById('small-output').textContent = code;
+		}
+	</script>
+
+</body>
+</html>
+

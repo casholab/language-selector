@@ -5,14 +5,12 @@ import styles from './SelectedLanguageDisplay.module.css';
 
 interface SelectedLanguageDisplayProps {
   language: DisplayLanguage;
-  flags?: Record<string, string>;
   showFlags?: boolean;
   showEnglishName?: boolean;
 }
 
 export const SelectedLanguageDisplay: React.FC<SelectedLanguageDisplayProps> = ({
   language,
-  flags,
   showFlags = false,
   showEnglishName = true,
 }) => {
@@ -48,10 +46,9 @@ export const SelectedLanguageDisplay: React.FC<SelectedLanguageDisplayProps> = (
           )}
         </div>
       )}
-      {showFlags && language.flagCodes.length > 0 && flags && (
-        <FlagDisplay flagCodes={language.flagCodes} flags={flags} size="lg" />
+      {showFlags && language.flagSvgDataUris.length > 0 && (
+        <FlagDisplay flagSvgDataUris={language.flagSvgDataUris} size="lg" />
       )}
     </div>
   );
 };
-

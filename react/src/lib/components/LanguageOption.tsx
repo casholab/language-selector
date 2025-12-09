@@ -5,7 +5,6 @@ import styles from './LanguageOption.module.css';
 
 interface LanguageOptionProps {
   language: DisplayLanguage;
-  flags?: Record<string, string>;
   showFlags?: boolean;
   showEnglishName?: boolean;
   selected?: boolean;
@@ -14,7 +13,6 @@ interface LanguageOptionProps {
 
 export const LanguageOption: React.FC<LanguageOptionProps> = ({
   language,
-  flags,
   showFlags = false,
   showEnglishName = true,
   selected = false,
@@ -31,8 +29,8 @@ export const LanguageOption: React.FC<LanguageOptionProps> = ({
       className={`${styles.option} ${selected ? styles.selected : ''}`}
       onClick={onClick}
     >
-      {showFlags && language.flagCodes.length > 0 && flags && (
-        <FlagDisplay flagCodes={language.flagCodes} flags={flags} size="md" />
+      {showFlags && language.flagSvgDataUris.length > 0 && (
+        <FlagDisplay flagSvgDataUris={language.flagSvgDataUris} size="md" />
       )}
       <div className={styles.content}>
         <div className={styles.native}>{language.endonym || language.name}</div>
@@ -81,4 +79,3 @@ export const LanguageOption: React.FC<LanguageOptionProps> = ({
     </button>
   );
 };
-

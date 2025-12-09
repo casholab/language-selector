@@ -1,39 +1,30 @@
 import React from 'react';
-import { svgToDataUri } from '../language-selector';
 import styles from './FlagDisplay.module.css';
 
 interface FlagDisplayProps {
-  flagCodes: string[];
-  flags?: Record<string, string>;
+  flagSvgDataUris: string[];
   size?: 'sm' | 'md' | 'lg';
 }
 
 export const FlagDisplay: React.FC<FlagDisplayProps> = ({
-  flagCodes,
-  flags,
+  flagSvgDataUris,
   size = 'md',
 }) => {
-  if (flagCodes.length === 0 || !flags) return null;
+  if (flagSvgDataUris.length === 0) return null;
 
   const layoutClass =
-    flagCodes.length > 2 ? 'grid' : flagCodes.length === 2 ? 'row' : 'single';
+    flagSvgDataUris.length > 2 ? 'grid' : flagSvgDataUris.length === 2 ? 'row' : 'single';
 
   return (
     <div className={`${styles.flags} ${styles[layoutClass]} ${styles[size]}`}>
-      {flagCodes.map((flagCode) => {
-        const svg = flags[flagCode] ?? flags[flagCode.toLowerCase()];
-        if (!svg) return null;
-        return (
-          <img
-            key={flagCode}
-            className={styles.flag}
-            src={svgToDataUri(svg)}
-            alt=""
-            title={flagCode}
-          />
-        );
-      })}
+      {flagSvgDataUris.map((uri, index) => (
+        <img
+          key={index}
+          className={styles.flag}
+          src={uri}
+          alt=""
+        />
+      ))}
     </div>
   );
 };
-

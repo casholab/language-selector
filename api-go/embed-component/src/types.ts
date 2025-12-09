@@ -62,6 +62,5 @@ export interface DisplayLanguage {
   regionNameNative?: string;
   scriptNameEnglish?: string;
   scriptNameLocal?: string;
-  flagCodes: string[];
+  flagSvgDataUris: string[];
 }
-

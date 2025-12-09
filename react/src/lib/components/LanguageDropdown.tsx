@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback, useId } from 'react';
 import type { LanguageCode } from '../types';
 import type { DisplayLanguage } from '../language-selector';
 import { filterLanguages } from '../language-selector';
@@ -22,9 +22,7 @@ interface LanguageDropdownProps {
 
 export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
   displayLanguages = [],
-  flags,
   isLoading = false,
-  error = null,
   skeletonCount = 0,
   selectedEntry = null,
   isOpen,
@@ -36,7 +34,10 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [openUpward, setOpenUpward] = useState(false);
   const [alignRight, setAlignRight] = useState(false);
+  const [leftShift, setLeftShift] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pixelRef = useRef<HTMLSpanElement>(null);
+  const uuid = useId();
 
   const handleClose = useCallback(() => {
     close();
@@ -66,18 +67,32 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
   }, [isOpen, handleKeydown]);
 
   useEffect(() => {
-    if (!isOpen || !dropdownRef.current) return;
+    if (!isOpen || !dropdownRef.current || !pixelRef.current) return;
 
-    const rect = dropdownRef.current.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
+    const pixelRect = pixelRef.current.getBoundingClientRect();
+    const dropdownRect = dropdownRef.current.getBoundingClientRect();
+    const viewportHeight = document.documentElement.clientHeight;
+    const viewportWidth = document.documentElement.clientWidth;
+    const dropdownHeight = dropdownRect.height;
+    const dropdownWidth = dropdownRect.width;
+    const topLeftY = pixelRect.top;
+    const topLeftX = pixelRect.left;
 
-    const spaceBelow = viewportHeight - rect.top;
-    const dropdownHeight = rect.height;
-    setOpenUpward(spaceBelow < dropdownHeight && rect.top > dropdownHeight);
+    const spaceBelow = viewportHeight - topLeftY;
+    setOpenUpward(spaceBelow < dropdownHeight && topLeftY > dropdownHeight);
 
-    if (rect.right > viewportWidth) {
+    const spaceRight = viewportWidth - topLeftX;
+    const spaceLeft = topLeftX;
+
+    if (spaceRight < dropdownWidth && spaceLeft < dropdownWidth) {
+      setAlignRight(false);
+      setLeftShift(-topLeftX);
+    } else if (spaceRight < dropdownWidth) {
       setAlignRight(true);
+      setLeftShift(0);
+    } else {
+      setAlignRight(false);
+      setLeftShift(0);
     }
 
     const handleWindowClick = (e: MouseEvent) => {
@@ -101,65 +116,61 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
     [displayLanguages, searchTerm]
   );
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      ref={dropdownRef}
-      className={`${styles.dropdown} ${openUpward ? styles.upward : ''} ${alignRight ? styles.right : ''}`}
-    >
-      {error ? (
-        <div className={styles.error}>
-          <p>Failed to load</p>
-          <p className={styles.errorDetails}>{error.message}</p>
-        </div>
-      ) : (
-        <div className={styles.content}>
-          {isLoading && (
-            <div className={styles.loadingOverlay}>
-              <div className={styles.spinner} />
-            </div>
-          )}
-
-          <SearchInput
-            value={searchTerm}
-            onChange={setSearchTerm}
-            variant="compact"
-            autoFocus
-            onKeyDown={handleKeydown}
-          />
-
-          <div className={styles.list}>
-            {displayLanguages.length > 0 ? (
-              <>
-                {filteredLanguages.length === 0 && (
-                  <div className={styles.empty}>No languages found</div>
-                )}
-                {filteredLanguages.map((language) => (
-                  <DropdownOption
-                    key={language.code}
-                    language={language}
-                    flags={flags}
-                    showFlags={showFlags}
-                    showEnglishName={
-                      showEnglishName &&
-                      !!language.endonym &&
-                      language.endonym !== language.name
-                    }
-                    selected={selectedEntry?.code === language.code}
-                    onClick={() => handleSelect(language.code)}
-                  />
-                ))}
-              </>
-            ) : (
-              Array.from({ length: skeletonCount }).map((_, i) => (
-                <div key={i} className={styles.placeholder} />
-              ))
+    <>
+      <span ref={pixelRef} className={styles.pixel} />
+      {isOpen && (
+        <div
+          key={uuid}
+          ref={dropdownRef}
+          className={`${styles.dropdown} ${openUpward ? styles.upward : ''} ${alignRight ? styles.right : ''}`}
+          style={leftShift ? { transform: `translateX(${leftShift}px)` } : undefined}
+        >
+          <div className={styles.content}>
+            {isLoading && (
+              <div className={styles.loadingOverlay}>
+                <div className={styles.spinner} />
+              </div>
             )}
+
+            <SearchInput
+              value={searchTerm}
+              onChange={setSearchTerm}
+              variant="compact"
+              autoFocus
+              onKeyDown={handleKeydown}
+            />
+
+            <div className={styles.list}>
+              {displayLanguages.length > 0 ? (
+                <>
+                  {filteredLanguages.length === 0 && (
+                    <div className={styles.empty}>No languages found</div>
+                  )}
+                  {filteredLanguages.map((language) => (
+                    <DropdownOption
+                      key={language.code}
+                      language={language}
+                      showFlags={showFlags}
+                      showEnglishName={
+                        showEnglishName &&
+                        !!language.endonym &&
+                        language.endonym !== language.name
+                      }
+                      selected={selectedEntry?.code === language.code}
+                      onClick={() => handleSelect(language.code)}
+                    />
+                  ))}
+                </>
+              ) : (
+                Array.from({ length: skeletonCount }).map((_, i) => (
+                  <div key={i} className={styles.placeholder} />
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
-

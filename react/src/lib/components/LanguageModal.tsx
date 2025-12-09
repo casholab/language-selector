@@ -11,9 +11,7 @@ import styles from './LanguageModal.module.css';
 
 interface LanguageModalProps {
   displayLanguages: DisplayLanguage[];
-  flags?: Record<string, string>;
   isLoading?: boolean;
-  error?: Error | null;
   skeletonCount?: number;
   selectedEntry?: DisplayLanguage | null;
   isOpen: boolean;
@@ -25,9 +23,7 @@ interface LanguageModalProps {
 
 export const LanguageModal: React.FC<LanguageModalProps> = ({
   displayLanguages = [],
-  flags,
   isLoading = false,
-  error = null,
   skeletonCount = 0,
   selectedEntry = null,
   isOpen,
@@ -63,62 +59,52 @@ export const LanguageModal: React.FC<LanguageModalProps> = ({
           <span>Select a Language</span>
         </header>
 
-        {error ? (
-          <div className={styles.error}>
-            <p>Failed to load languages</p>
-            <p className={styles.errorDetails}>{error.message}</p>
-          </div>
-        ) : (
-          <div className={styles.content}>
-            {isLoading && (
-              <div className={styles.loadingOverlay}>
-                <div className={styles.spinner} />
-              </div>
-            )}
-
-            {selectedEntry && (
-              <>
-                <SelectedLanguageDisplay
-                  language={selectedEntry}
-                  flags={flags}
-                  showFlags={showFlags}
-                  showEnglishName={
-                    showEnglishName &&
-                    !!selectedEntry.endonym &&
-                    selectedEntry.endonym !== selectedEntry.name
-                  }
-                />
-                <hr className={styles.divider} />
-              </>
-            )}
-
-            <SearchInput value={searchTerm} onChange={setSearchTerm} />
-
-            <div className={styles.list}>
-              {displayLanguages.length > 0
-                ? filteredLanguages.map((language) => (
-                    <LanguageOption
-                      key={language.code}
-                      language={language}
-                      flags={flags}
-                      showFlags={showFlags}
-                      showEnglishName={
-                        showEnglishName &&
-                        !!language.endonym &&
-                        language.endonym !== language.name
-                      }
-                      selected={selectedEntry?.code === language.code}
-                      onClick={() => handleSelect(language.code)}
-                    />
-                  ))
-                : Array.from({ length: skeletonCount }).map((_, i) => (
-                    <div key={i} className={styles.placeholder} />
-                  ))}
+        <div className={styles.content}>
+          {isLoading && (
+            <div className={styles.loadingOverlay}>
+              <div className={styles.spinner} />
             </div>
+          )}
+
+          {selectedEntry && (
+            <>
+              <SelectedLanguageDisplay
+                language={selectedEntry}
+                showFlags={showFlags}
+                showEnglishName={
+                  showEnglishName &&
+                  !!selectedEntry.endonym &&
+                  selectedEntry.endonym !== selectedEntry.name
+                }
+              />
+              <hr className={styles.divider} />
+            </>
+          )}
+
+          <SearchInput value={searchTerm} onChange={setSearchTerm} />
+
+          <div className={styles.list}>
+            {displayLanguages.length > 0
+              ? filteredLanguages.map((language) => (
+                  <LanguageOption
+                    key={language.code}
+                    language={language}
+                    showFlags={showFlags}
+                    showEnglishName={
+                      showEnglishName &&
+                      !!language.endonym &&
+                      language.endonym !== language.name
+                    }
+                    selected={selectedEntry?.code === language.code}
+                    onClick={() => handleSelect(language.code)}
+                  />
+                ))
+              : Array.from({ length: skeletonCount }).map((_, i) => (
+                  <div key={i} className={styles.placeholder} />
+                ))}
           </div>
-        )}
+        </div>
       </div>
     </Modal>
   );
 };
-

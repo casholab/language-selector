@@ -46,6 +46,10 @@ function getFlagsForEntry(
   return entry.flags ?? [];
 }
 
+function svgToDataUri(svg: string): string {
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
 function buildDisplayLanguages(data: LanguageLookupResult, flagMode: FlagDisplayMode): DisplayLanguage[] {
   return data.resolved.map(resolvedTag => {
     const parsed = parseTag(resolvedTag);
@@ -70,6 +74,14 @@ function buildDisplayLanguages(data: LanguageLookupResult, flagMode: FlagDisplay
       endonym = scriptData.languageInScript || endonym;
     }
     
+    const flagCodes = getFlagsForEntry(parsed, entry, flagMode);
+    const flagSvgDataUris = flagCodes
+      .map(code => {
+        const svg = data.flags?.[code] ?? data.flags?.[code.toLowerCase()];
+        return svg ? svgToDataUri(svg) : null;
+      })
+      .filter((uri): uri is string => uri !== null);
+    
     return {
       code: resolvedTag,
       name: entry?.data.name ?? resolvedTag,
@@ -78,7 +90,7 @@ function buildDisplayLanguages(data: LanguageLookupResult, flagMode: FlagDisplay
       regionNameNative,
       scriptNameEnglish,
       scriptNameLocal,
-      flagCodes: getFlagsForEntry(parsed, entry, flagMode)
+      flagSvgDataUris
     };
   });
 }
@@ -177,7 +189,7 @@ function initInstance(el: HTMLElement): void {
       fetchedData = await loadLanguageData(config);
       error = null;
       const displayLanguages = buildDisplayLanguages(fetchedData, config.flagMode);
-      updateUI({ languages: displayLanguages, flags: fetchedData.flags, isLoading: false });
+      updateUI({ languages: displayLanguages, isLoading: false });
     } catch (e) {
       error = e instanceof Error ? e : new Error(String(e));
       updateUI({ isLoading: false, error });
@@ -212,7 +224,6 @@ function initInstance(el: HTMLElement): void {
     
     const opts = {
       languages: displayLanguages,
-      flags: fetchedData?.flags,
       showEnglishName: config.showEnglishName,
       flagMode: config.flagMode,
       isLoading: isFetching || (!fetchedData && !error),
@@ -258,4 +269,3 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
-

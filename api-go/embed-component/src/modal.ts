@@ -1,9 +1,8 @@
 import { LanguageIcon, XIcon, SearchIcon } from './icons';
-import type { DisplayLanguage, LanguageLookupResult, FlagDisplayMode } from './types';
+import type { DisplayLanguage, FlagDisplayMode } from './types';
 
 interface ModalState {
   languages: DisplayLanguage[];
-  flags?: Record<string, string>;
   showEnglishName: boolean;
   showFlags: boolean;
   isLoading: boolean;
@@ -16,10 +15,6 @@ interface ModalState {
 
 let modalEl: HTMLDivElement | null = null;
 let state: ModalState | null = null;
-
-function svgToDataUri(svg: string): string {
-  return 'data:image/svg+xml,' + encodeURIComponent(svg);
-}
 
 function filterLanguages(languages: DisplayLanguage[], term: string): DisplayLanguage[] {
   if (!term) return languages;
@@ -35,19 +30,16 @@ function filterLanguages(languages: DisplayLanguage[], term: string): DisplayLan
   );
 }
 
-function renderFlagDisplay(flagCodes: string[], flags: Record<string, string>, size: 'sm' | 'md' | 'lg'): string {
-  if (flagCodes.length === 0 || !flags) return '';
+function renderFlagDisplay(flagSvgDataUris: string[], size: 'sm' | 'md' | 'lg'): string {
+  if (flagSvgDataUris.length === 0) return '';
   
-  const layout = flagCodes.length > 2 ? 'grid' : flagCodes.length === 2 ? 'row' : 'single';
-  const imgs = flagCodes.map(code => {
-    const svg = flags[code] || flags[code.toLowerCase()];
-    return svg ? `<img class="ls-flag" src="${svgToDataUri(svg)}" alt="" title="${code}">` : '';
-  }).join('');
+  const layout = flagSvgDataUris.length > 2 ? 'grid' : flagSvgDataUris.length === 2 ? 'row' : 'single';
+  const imgs = flagSvgDataUris.map(uri => `<img class="ls-flag" src="${uri}" alt="">`).join('');
   
   return `<div class="ls-flags ls-flags-${layout} ls-flags-${size}">${imgs}</div>`;
 }
 
-function renderSelectedDisplay(lang: DisplayLanguage, flags: Record<string, string> | undefined, showFlags: boolean, showEnglishName: boolean): string {
+function renderSelectedDisplay(lang: DisplayLanguage, showFlags: boolean, showEnglishName: boolean): string {
   const scriptLocal = lang.scriptNameLocal ? `<span class="ls-selected-script-local">(${lang.scriptNameLocal})</span>` : '';
   const regionLocal = lang.regionNameNative ? `<span class="ls-selected-region-local">(${lang.regionNameNative})</span>` : '';
   
@@ -63,7 +55,7 @@ function renderSelectedDisplay(lang: DisplayLanguage, flags: Record<string, stri
     englishPart = `<div class="ls-selected-english"><span class="ls-selected-name">${lang.name}</span>${variant ? `<span class="ls-selected-variant">${variant}</span>` : ''}</div>`;
   }
   
-  const flagPart = showFlags && lang.flagCodes.length > 0 && flags ? renderFlagDisplay(lang.flagCodes, flags, 'lg') : '';
+  const flagPart = showFlags && lang.flagSvgDataUris.length > 0 ? renderFlagDisplay(lang.flagSvgDataUris, 'lg') : '';
   
   return `<div class="ls-selected">
     <div class="ls-selected-native">${lang.endonym || lang.name}${scriptLocal}${regionLocal}</div>
@@ -72,8 +64,8 @@ function renderSelectedDisplay(lang: DisplayLanguage, flags: Record<string, stri
   </div>`;
 }
 
-function renderOption(lang: DisplayLanguage, flags: Record<string, string> | undefined, showFlags: boolean, showEnglishName: boolean, isSelected: boolean): string {
-  const flagPart = showFlags && lang.flagCodes.length > 0 && flags ? renderFlagDisplay(lang.flagCodes, flags, 'md') : '';
+function renderOption(lang: DisplayLanguage, showFlags: boolean, showEnglishName: boolean, isSelected: boolean): string {
+  const flagPart = showFlags && lang.flagSvgDataUris.length > 0 ? renderFlagDisplay(lang.flagSvgDataUris, 'md') : '';
   
   const hasVariant = lang.regionNameNative || lang.regionNameEnglish || lang.scriptNameLocal || lang.scriptNameEnglish;
   
@@ -112,8 +104,9 @@ function renderOption(lang: DisplayLanguage, flags: Record<string, string> | und
 function render(): void {
   if (!modalEl || !state) return;
   
-  const filtered = filterLanguages(state.languages, state.searchTerm);
-  const selectedLang = state.selectedCode ? state.languages.find(l => l.code === state.selectedCode) : null;
+  const currentState = state;
+  const filtered = filterLanguages(currentState.languages, currentState.searchTerm);
+  const selectedLang = currentState.selectedCode ? currentState.languages.find(l => l.code === currentState.selectedCode) : null;
   
   let content: string;
   
@@ -123,11 +116,11 @@ function render(): void {
     const loadingOverlay = state.isLoading ? '<div class="ls-loading-overlay"><div class="ls-spinner"></div></div>' : '';
     
     const selectedDisplay = selectedLang 
-      ? renderSelectedDisplay(selectedLang, state.flags, state.showFlags, state.showEnglishName && !!selectedLang.endonym && selectedLang.endonym !== selectedLang.name) + '<div class="ls-hr"></div>'
+      ? renderSelectedDisplay(selectedLang, state.showFlags, state.showEnglishName && !!selectedLang.endonym && selectedLang.endonym !== selectedLang.name) + '<div class="ls-hr"></div>'
       : '';
     
     const listItems = state.languages.length > 0
-      ? filtered.map(l => renderOption(l, state!.flags, state!.showFlags, state!.showEnglishName && !!l.endonym && l.endonym !== l.name, selectedLang?.code === l.code)).join('')
+      ? filtered.map(l => renderOption(l, state!.showFlags, state!.showEnglishName && !!l.endonym && l.endonym !== l.name, selectedLang?.code === l.code)).join('')
       : Array(10).fill('<div class="ls-option-placeholder" style="padding:var(--ls-padding);background:var(--ls-bg);border:1px solid var(--ls-border);border-radius:var(--ls-radius);width:100%;max-width:360px;height:58px;"></div>').join('');
     
     content = `<div class="ls-content">
@@ -187,7 +180,6 @@ function handleKeydown(e: KeyboardEvent): void {
 
 export function openModal(opts: {
   languages: DisplayLanguage[];
-  flags?: Record<string, string>;
   showEnglishName: boolean;
   flagMode: FlagDisplayMode;
   isLoading: boolean;
@@ -202,7 +194,6 @@ export function openModal(opts: {
   
   state = {
     languages: opts.languages,
-    flags: opts.flags,
     showEnglishName: opts.showEnglishName,
     showFlags: opts.flagMode !== 'none',
     isLoading: opts.isLoading,
@@ -217,10 +208,9 @@ export function openModal(opts: {
   render();
 }
 
-export function updateModal(opts: { languages?: DisplayLanguage[]; flags?: Record<string, string>; isLoading?: boolean; error?: Error | null }): void {
+export function updateModal(opts: { languages?: DisplayLanguage[]; isLoading?: boolean; error?: Error | null }): void {
   if (!state) return;
   if (opts.languages !== undefined) state.languages = opts.languages;
-  if (opts.flags !== undefined) state.flags = opts.flags;
   if (opts.isLoading !== undefined) state.isLoading = opts.isLoading;
   if (opts.error !== undefined) state.error = opts.error;
   render();
@@ -234,4 +224,3 @@ export function closeModal(): void {
   }
   state = null;
 }
-

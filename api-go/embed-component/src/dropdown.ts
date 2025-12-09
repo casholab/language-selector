@@ -3,7 +3,6 @@ import type { DisplayLanguage, FlagDisplayMode } from './types';
 
 interface DropdownState {
   languages: DisplayLanguage[];
-  flags?: Record<string, string>;
   showEnglishName: boolean;
   showFlags: boolean;
   isLoading: boolean;
@@ -15,13 +14,10 @@ interface DropdownState {
 }
 
 let dropdownEl: HTMLDivElement | null = null;
+let pixelEl: HTMLSpanElement | null = null;
 let state: DropdownState | null = null;
 let anchorEl: HTMLElement | null = null;
 let cleanupClickOutside: (() => void) | null = null;
-
-function svgToDataUri(svg: string): string {
-  return 'data:image/svg+xml,' + encodeURIComponent(svg);
-}
 
 function filterLanguages(languages: DisplayLanguage[], term: string): DisplayLanguage[] {
   if (!term) return languages;
@@ -37,11 +33,10 @@ function filterLanguages(languages: DisplayLanguage[], term: string): DisplayLan
   );
 }
 
-function renderOption(lang: DisplayLanguage, flags: Record<string, string> | undefined, showFlags: boolean, showEnglishName: boolean, isSelected: boolean): string {
+function renderOption(lang: DisplayLanguage, showFlags: boolean, showEnglishName: boolean, isSelected: boolean): string {
   let flagImg = '';
-  if (showFlags && lang.flagCodes.length > 0 && flags) {
-    const svg = flags[lang.flagCodes[0]] || flags[lang.flagCodes[0].toLowerCase()];
-    if (svg) flagImg = `<img class="ls-flag-sm" src="${svgToDataUri(svg)}" alt="">`;
+  if (showFlags && lang.flagSvgDataUris.length > 0) {
+    flagImg = `<img class="ls-flag-sm" src="${lang.flagSvgDataUris[0]}" alt="">`;
   }
   
   const englishPart = showEnglishName && lang.endonym && lang.endonym.toLowerCase() !== lang.name.toLowerCase()
@@ -83,8 +78,9 @@ function renderOption(lang: DisplayLanguage, flags: Record<string, string> | und
 function render(): void {
   if (!dropdownEl || !state) return;
   
-  const filtered = filterLanguages(state.languages, state.searchTerm);
-  const selectedLang = state.selectedCode ? state.languages.find(l => l.code === state.selectedCode) : null;
+  const currentState = state;
+  const filtered = filterLanguages(currentState.languages, currentState.searchTerm);
+  const selectedLang = currentState.selectedCode ? currentState.languages.find(l => l.code === currentState.selectedCode) : null;
   
   let content: string;
   
@@ -98,7 +94,7 @@ function render(): void {
       if (filtered.length === 0) {
         listItems = '<div class="ls-dropdown-empty">No languages found</div>';
       } else {
-        listItems = filtered.map(l => renderOption(l, state!.flags, state!.showFlags, state!.showEnglishName && !!l.endonym && l.endonym !== l.name, selectedLang?.code === l.code)).join('');
+        listItems = filtered.map(l => renderOption(l, state!.showFlags, state!.showEnglishName && !!l.endonym && l.endonym !== l.name, selectedLang?.code === l.code)).join('');
       }
     } else {
       listItems = Array(5).fill('<div class="ls-dropdown-option-placeholder" style="padding:0.625rem 0.75rem;min-height:2.5rem;"></div>').join('');
@@ -147,26 +143,39 @@ function handleKeydown(e: KeyboardEvent): void {
 }
 
 function positionDropdown(): void {
-  if (!dropdownEl || !anchorEl) return;
+  if (!dropdownEl || !pixelEl) return;
   
-  const rect = dropdownEl.getBoundingClientRect();
-  const anchorRect = anchorEl.getBoundingClientRect();
-  const viewportHeight = window.innerHeight;
-  const viewportWidth = window.innerWidth;
-  
-  const spaceBelow = viewportHeight - anchorRect.bottom;
-  if (spaceBelow < rect.height && anchorRect.top > rect.height) {
+  const pixelRect = pixelEl.getBoundingClientRect();
+  const dropdownRect = dropdownEl.getBoundingClientRect();
+  const viewportHeight = document.documentElement.clientHeight;
+  const viewportWidth = document.documentElement.clientWidth;
+  const dropdownHeight = dropdownRect.height;
+  const dropdownWidth = dropdownRect.width;
+  const topLeftY = pixelRect.top;
+  const topLeftX = pixelRect.left;
+
+  const spaceBelow = viewportHeight - topLeftY;
+  if (spaceBelow < dropdownHeight && topLeftY > dropdownHeight) {
     dropdownEl.classList.add('ls-dropdown-upward');
   }
-  
-  if (anchorRect.left + rect.width > viewportWidth) {
+
+  const spaceRight = viewportWidth - topLeftX;
+  const spaceLeft = topLeftX;
+
+  if (spaceRight < dropdownWidth && spaceLeft < dropdownWidth) {
+    dropdownEl.classList.remove('ls-dropdown-right');
+    dropdownEl.style.transform = `translateX(${-topLeftX}px)`;
+  } else if (spaceRight < dropdownWidth) {
     dropdownEl.classList.add('ls-dropdown-right');
+    dropdownEl.style.transform = '';
+  } else {
+    dropdownEl.classList.remove('ls-dropdown-right');
+    dropdownEl.style.transform = '';
   }
 }
 
 export function openDropdown(anchor: HTMLElement, opts: {
   languages: DisplayLanguage[];
-  flags?: Record<string, string>;
   showEnglishName: boolean;
   flagMode: FlagDisplayMode;
   isLoading: boolean;
@@ -177,13 +186,17 @@ export function openDropdown(anchor: HTMLElement, opts: {
   if (dropdownEl) closeDropdown();
   
   anchorEl = anchor;
+  
+  pixelEl = document.createElement('span');
+  pixelEl.className = 'ls-pixel';
+  anchor.parentElement?.appendChild(pixelEl);
+  
   dropdownEl = document.createElement('div');
   dropdownEl.className = 'ls-dropdown';
   anchor.parentElement?.appendChild(dropdownEl);
   
   state = {
     languages: opts.languages,
-    flags: opts.flags,
     showEnglishName: opts.showEnglishName,
     showFlags: opts.flagMode !== 'none',
     isLoading: opts.isLoading,
@@ -210,10 +223,9 @@ export function openDropdown(anchor: HTMLElement, opts: {
   }, 0);
 }
 
-export function updateDropdown(opts: { languages?: DisplayLanguage[]; flags?: Record<string, string>; isLoading?: boolean; error?: Error | null }): void {
+export function updateDropdown(opts: { languages?: DisplayLanguage[]; isLoading?: boolean; error?: Error | null }): void {
   if (!state) return;
   if (opts.languages !== undefined) state.languages = opts.languages;
-  if (opts.flags !== undefined) state.flags = opts.flags;
   if (opts.isLoading !== undefined) state.isLoading = opts.isLoading;
   if (opts.error !== undefined) state.error = opts.error;
   render();
@@ -223,6 +235,10 @@ export function closeDropdown(): void {
   document.removeEventListener('keydown', handleKeydown);
   cleanupClickOutside?.();
   cleanupClickOutside = null;
+  if (pixelEl) {
+    pixelEl.remove();
+    pixelEl = null;
+  }
   if (dropdownEl) {
     dropdownEl.remove();
     dropdownEl = null;
@@ -230,4 +246,3 @@ export function closeDropdown(): void {
   anchorEl = null;
   state = null;
 }
-
