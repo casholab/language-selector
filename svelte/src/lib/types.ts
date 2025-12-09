@@ -42,6 +42,18 @@ export interface LanguageLookupResult {
 	flags?: Record<string, string>;
 }
 
+// Client Side Rebuilt Object
+export interface DisplayLanguage {
+	code: string;
+	name: string;
+	endonym: string;
+	regionNameEnglish?: string;
+	regionNameNative?: string;
+	scriptNameEnglish?: string;
+	scriptNameLocal?: string;
+	flagSvgDataUris: string[];
+}
+
 export interface DisplayOptions {
 	isModal?: boolean;
 	showEnglishName?: boolean;

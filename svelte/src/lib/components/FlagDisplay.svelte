@@ -1,28 +1,21 @@
 <script lang="ts">
-	import { svgToDataUri } from '../language-selector.ts';
-
 	let {
-		flagCodes,
-		flags,
+		srcList,
 		size = 'md'
 	}: {
-		flagCodes: string[];
-		flags?: Record<string, string>;
+		srcList: string[];
 		size?: 'sm' | 'md' | 'lg';
 	} = $props();
 
 	let layoutClass = $derived(
-		flagCodes.length > 2 ? 'grid' : flagCodes.length === 2 ? 'row' : 'single'
+		srcList.length > 2 ? 'grid' : srcList.length === 2 ? 'row' : 'single'
 	);
 </script>
 
-{#if flagCodes.length > 0 && flags}
+{#if srcList.length > 0}
 	<div class="ls-flags ls-flags-{layoutClass} ls-flags-{size}">
-		{#each flagCodes as flagCode (flagCode)}
-			{@const svg = flags[flagCode] ?? flags[flagCode.toLowerCase()]}
-			{#if svg}
-				<img class="ls-flag" src={svgToDataUri(svg)} alt="" title={flagCode} />
-			{/if}
+		{#each srcList as dataUri, i (i)}
+			<img class="ls-flag" src={dataUri} alt="" />
 		{/each}
 	</div>
 {/if}

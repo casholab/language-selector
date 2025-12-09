@@ -1,15 +1,6 @@
-import type { LanguageLookupResult, FlagMode } from './types.ts';
+import type { LanguageLookupResult, FlagDisplayMode, DisplayLanguage } from './types.ts';
 
-export interface DisplayLanguage {
-	code: string;
-	name: string;
-	endonym: string;
-	regionNameEnglish?: string;
-	regionNameNative?: string;
-	scriptNameEnglish?: string;
-	scriptNameLocal?: string;
-	flagCodes: string[];
-}
+
 
 export interface ParsedTag {
 	lang: string;
@@ -34,7 +25,7 @@ export function parseTag(tag: string): ParsedTag {
 export function getFlagsForEntry(
 	parsed: ParsedTag,
 	entry: LanguageLookupResult['data'][string] | undefined,
-	flagMode: FlagMode
+	flagMode: FlagDisplayMode
 ): string[] {
 	if (flagMode === 'none' || !entry) return [];
 
@@ -55,7 +46,8 @@ export function svgToDataUri(svg: string): string {
 
 export function buildDisplayLanguages(
 	languagesData: LanguageLookupResult,
-	flagMode: FlagMode
+	flagMode: FlagDisplayMode,
+	flags?: Record<string, string>
 ): DisplayLanguage[] {
 	return languagesData.resolved.map((resolvedTag) => {
 		const parsed = parseTag(resolvedTag);
@@ -81,6 +73,12 @@ export function buildDisplayLanguages(
 		}
 
 		const flagCodes = getFlagsForEntry(parsed, entry, flagMode);
+		const flagSvgDataUris = flagCodes
+			.map((code) => {
+				const svg = flags?.[code] ?? flags?.[code.toLowerCase()];
+				return svg ? svgToDataUri(svg) : null;
+			})
+			.filter((uri): uri is string => uri !== null);
 
 		return {
 			code: resolvedTag,
@@ -90,7 +88,7 @@ export function buildDisplayLanguages(
 			regionNameNative,
 			scriptNameEnglish,
 			scriptNameLocal,
-			flagCodes
+			flagSvgDataUris
 		};
 	});
 }

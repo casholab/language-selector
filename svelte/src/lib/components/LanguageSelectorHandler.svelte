@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { LanguageCode, LanguageLookupResult, DisplayOptions, LoadOptions } from '../types.ts';
-	import type { DisplayLanguage } from '../language-selector.ts';
+	import type { LanguageCode, LanguageLookupResult, DisplayOptions, LoadOptions, DisplayLanguage } from '../types.ts';
 	import { buildDisplayLanguages } from '../language-selector.ts';
 	import { loadLanguageData } from '../loader.ts';
 	import '$lib/language-selector.css';
 	import LanguageModal from './LanguageModal.svelte';
 	import LanguageDropdown from './LanguageDropdown.svelte';
+    import LocalizeButton from './LocalizeButton.svelte';
 
 	let {
 		staticData,
@@ -13,17 +13,13 @@
 		displayOptions = {},
 		loadOptions = {},
 		selectedLanguage = $bindable<LanguageCode | null>(null),
-		isOpen = $bindable(false),
 		onSelection = () => {},
-		preload = $bindable(false)
 	}: {
-		preload?: boolean;
 		languages?: string[];
 		staticData?: LanguageLookupResult;
 		displayOptions?: DisplayOptions;
 		loadOptions?: LoadOptions;
 		selectedLanguage?: LanguageCode | null;
-		isOpen?: boolean;
 		onSelection?: (language: LanguageCode) => void;
 	} = $props();
 
@@ -34,6 +30,7 @@
 	let fetchedData = $state<LanguageLookupResult | null>(null);
 	let error = $state<Error | null>(null);
 	let isFetching = $state(false);
+	let isOpen=$state(false)
 
 	async function loadData() {
 		if (isFetching || fetchedData || staticData) return;
@@ -41,11 +38,9 @@
 			error = new Error('No languages provided');
 			return;
 		}
-
-		isFetching = true;
 		try {
-			let data = await loadLanguageData(languages, displayOptions, loadOptions);
-			fetchedData = data;
+			isFetching = true;
+			fetchedData = await loadLanguageData(languages, displayOptions, loadOptions);
 			error = null;
 		} catch (e) {
 			error = e instanceof Error ? e : new Error(String(e));
@@ -54,18 +49,13 @@
 		}
 	}
 
-	$effect(() => {
-		if ((isOpen || preload) && !staticData && !fetchedData && !isFetching) {
-			loadData();
-		}
-	});
 
 	let languagesData = $derived(staticData ?? fetchedData);
-	let isLoading = $derived(isFetching || (!languagesData && !error));
 
+	
 	let displayLanguages = $derived.by((): DisplayLanguage[] => {
-		if (!languagesData) return [];
-		return buildDisplayLanguages(languagesData, flagMode);
+		if (!languagesData) return Array(languages.length).fill({});
+		return buildDisplayLanguages(languagesData, flagMode, languagesData.flags);
 	});
 
 	let selectedEntry = $derived.by((): DisplayLanguage | null => {
@@ -84,33 +74,65 @@
 </script>
 
 
+<div class="ls-embed-wrapper">
+	<LocalizeButton onmouseenter={loadData} onclick={() => { isOpen = !isOpen; loadData(); }} size={displayOptions.buttonSize} />
+	{#if error}
+		<div class="ls-error">
+			<p>Failed to load languages</p>
+			<p class="ls-error-details">{error.message}</p>
+			<button onclick={()=>loadData()}>Retry</button>
+			<hr/>
+			<button onclick={()=>error=null}>Close</button>
+			
+		</div>
+	{/if}
+	{#if isModal}
+		<LanguageModal
+			languagesData={displayLanguages}
+			isLoading={isFetching}
+			{selectedEntry}
+			bind:isOpen
+			{showEnglishName}
+			showFlags={flagMode !== 'none'}
+			{selectLanguage}
+			{close}
+		/>
+	{:else}
+		<LanguageDropdown
+			{close}
+			languagesData={displayLanguages}
+			isLoading={isFetching}
+			bind:isOpen
+			{showEnglishName}
+			showFlags={flagMode !== 'none'}
+			{selectLanguage}
+			{selectedEntry}
+		/>
+	{/if}
+</div>
 
-{#if isModal}
-	<LanguageModal
-		{displayLanguages}
-		flags={languagesData?.flags}
-		{isLoading}
-		{error}
-		skeletonCount={languages.length}
-		{selectedEntry}
-		bind:isOpen
-		{showEnglishName}
-		showFlags={flagMode !== 'none'}
-		{selectLanguage}
-		{close}
-	/>
-{:else}
-	<LanguageDropdown
-		{displayLanguages}
-		flags={languagesData?.flags}
-		{isLoading}
-		{error}
-		skeletonCount={languages.length}
-		{selectedEntry}
-		bind:isOpen
-		{showEnglishName}
-		showFlags={flagMode !== 'none'}
-		{selectLanguage}
-		{close}
-	/>
-{/if}
+<style>
+	.ls-embed-wrapper {
+		position: relative;
+		display: inline-block;
+	}
+
+	.ls-error {
+		background: var(--ls-modal-bg);
+		border: 1px solid var(--ls-border);
+		border-radius: var(--ls-radius);
+		box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.15), 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+		z-index: 100;
+		margin-top: 4px;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		gap: 1rem;
+		padding: 2rem 1rem;
+		color: var(--ls-fg-muted);
+		position: absolute;
+		top: 100%;
+		left: 0;
+		width: 280px;
+	}
+</style>

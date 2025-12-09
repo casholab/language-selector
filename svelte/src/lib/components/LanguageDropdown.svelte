@@ -1,16 +1,12 @@
 <script lang="ts">
-	import type { LanguageCode } from '../types.ts';
-	import type { DisplayLanguage } from '../language-selector.ts';
+	import type { LanguageCode, DisplayLanguage } from '../types.ts';
 	import { filterLanguages } from '../language-selector.ts';
 	import SearchInput from './SearchInput.svelte';
 	import DropdownOption from './DropdownOption.svelte';
 
 	let {
-		displayLanguages = [],
-		flags,
+		languagesData= [],
 		isLoading = false,
-		error = null,
-		skeletonCount = 0,
 		selectedEntry = null,
 		isOpen = $bindable(false),
 		showEnglishName = true,
@@ -18,11 +14,8 @@
 		selectLanguage,
 		close
 	}: {
-		displayLanguages: DisplayLanguage[];
-		flags?: Record<string, string>;
+		languagesData: DisplayLanguage[];
 		isLoading?: boolean;
-		error?: Error | null;
-		skeletonCount?: number;
 		selectedEntry?: DisplayLanguage | null;
 		isOpen?: boolean;
 		showEnglishName?: boolean;
@@ -56,6 +49,10 @@
 		const rect = node.getBoundingClientRect();
 		const viewportHeight = window.innerHeight;
 		const viewportWidth = window.innerWidth;
+
+		//PSeudo Code;
+		//IF right top 
+
 		
 		// Vertical positioning
 		const spaceBelow = viewportHeight - rect.top;
@@ -90,7 +87,7 @@
 		};
 	}
 
-	let filteredLanguages = $derived(filterLanguages(displayLanguages, searchTerm));
+	let filteredLanguages = $derived(filterLanguages(languagesData, searchTerm));
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -102,52 +99,41 @@
 		class:ls-dropdown-upward={openUpward}
 		class:ls-dropdown-right={alignRight}
 	>
-		{#if error}
-			<div class="ls-dropdown-error">
-				<p>Failed to load</p>
-				<!-- Retry isn't easily possible without re-triggering promise in parent, 
-					 but usually parent handles retries or we assume transient errors. 
-					 We can expose a retry prop if needed, but for now we just show error. -->
-				<p class="ls-error-details">{error.message}</p>
-			</div>
-		{:else}
-			<div class="ls-dropdown-content">
-				{#if isLoading}
-					<div class="ls-dropdown-loading-overlay">
-						<div class="ls-spinner-sm"></div>
-					</div>
-				{/if}
-
-				<SearchInput
-					bind:value={searchTerm}
-					variant="compact"
-					autofocus
-					onkeydown={handleKeydown}
-				/>
-
-				<div class="ls-dropdown-list">
-					{#if displayLanguages.length > 0}
-						{#if filteredLanguages.length === 0}
-							<div class="ls-dropdown-empty">No languages found</div>
-						{/if}
-						{#each filteredLanguages as language (language.code)}
-							<DropdownOption
-								{language}
-								{flags}
-								{showFlags}
-								showEnglishName={showEnglishName && !!language.endonym && language.endonym !== language.name}
-								selected={selectedEntry?.code === language.code}
-								onclick={() => handleSelect(language.code)}
-							/>
-						{/each}
-					{:else}
-						{#each Array(skeletonCount) as _, i (i)}
-							<div class="ls-dropdown-option-placeholder"></div>
-						{/each}
-					{/if}
+		<div class="ls-dropdown-content">
+			{#if isLoading}
+				<div class="ls-dropdown-loading-overlay">
+					<div class="ls-spinner-sm"></div>
 				</div>
+			{/if}
+
+			<SearchInput
+				bind:value={searchTerm}
+				variant="compact"
+				autofocus
+				onkeydown={handleKeydown}
+			/>
+
+			<div class="ls-dropdown-list">
+				{#if languagesData.length > 0}
+					{#if filteredLanguages.length === 0}
+						<div class="ls-dropdown-empty">No languages found</div>
+					{/if}
+					{#each filteredLanguages as language (language.code)}
+						<DropdownOption
+							{language}
+							{showFlags}
+							showEnglishName={showEnglishName && !!language.endonym && language.endonym !== language.name}
+							selected={selectedEntry?.code === language.code}
+							onclick={() => handleSelect(language.code)}
+						/>
+					{/each}
+				{:else}
+					{#each Array(languagesData.length) as _, i (i)}
+						<div class="ls-dropdown-option-placeholder"></div>
+					{/each}
+				{/if}
 			</div>
-		{/if}
+		</div>
 	</div>
 {/if}
 
@@ -157,6 +143,7 @@
 		top: 100%;
 		left: 0;
 		width: 280px;
+		max-width: 100vw;
 		max-height: 360px;
 		background: var(--ls-modal-bg);
 		border: 1px solid var(--ls-border);
@@ -232,29 +219,7 @@
 		to { transform: rotate(360deg); }
 	}
 
-	.ls-dropdown-error {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 1rem;
-		color: var(--ls-fg-muted);
-		font-size: 0.875rem;
-	}
 
-	.ls-dropdown-error button {
-		padding: 0.375rem 0.75rem;
-		font-size: 0.75rem;
-		background: var(--ls-bg);
-		border: 1px solid var(--ls-border);
-		border-radius: var(--ls-radius);
-		color: var(--ls-fg);
-		cursor: pointer;
-	}
-
-	.ls-dropdown-error button:hover {
-		background: var(--ls-bg-hover);
-	}
 
 	.ls-dropdown-option-placeholder {
 		padding: 0.625rem 0.75rem;

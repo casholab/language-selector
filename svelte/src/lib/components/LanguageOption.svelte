@@ -1,17 +1,15 @@
 <script lang="ts">
-	import type { DisplayLanguage } from '../language-selector.ts';
+	import type { DisplayLanguage } from '../types.ts';
 	import FlagDisplay from './FlagDisplay.svelte';
 
 	let {
 		language,
-		flags,
 		showFlags = false,
 		showEnglishName = true,
 		selected = false,
 		onclick
 	}: {
 		language: DisplayLanguage;
-		flags?: Record<string, string>;
 		showFlags?: boolean;
 		showEnglishName?: boolean;
 		selected?: boolean;
@@ -27,8 +25,8 @@
 </script>
 
 <button class="ls-option" class:selected {onclick}>
-	{#if showFlags && language.flagCodes.length > 0 && flags}
-		<FlagDisplay flagCodes={language.flagCodes} {flags} size="md" />
+	{#if showFlags && language.flagSvgDataUris.length > 0}
+		<FlagDisplay srcList={language.flagSvgDataUris} size="md" />
 	{/if}
 	<div class="ls-option-content">
 		<div class="ls-option-native">

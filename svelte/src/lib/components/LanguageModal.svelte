@@ -1,19 +1,15 @@
 <script lang="ts">
 	import Modal from './Modal.svelte';
 	import LanguageIcon from '$lib/icons/LanguageIcon.svelte';
-	import type { LanguageCode } from '../types.ts';
-	import type { DisplayLanguage } from '../language-selector.ts';
+	import type { LanguageCode, DisplayLanguage } from '../types.ts';
 	import { filterLanguages } from '../language-selector.ts';
 	import SearchInput from './SearchInput.svelte';
 	import LanguageOption from './LanguageOption.svelte';
 	import SelectedLanguageDisplay from './SelectedLanguageDisplay.svelte';
 
 	let {
-		displayLanguages = [],
-		flags,
+		languagesData = [],
 		isLoading = false,
-		error = null,
-		skeletonCount = 0,
 		selectedEntry = null,
 		isOpen = $bindable(false),
 		showEnglishName = true,
@@ -21,11 +17,8 @@
 		selectLanguage,
 		close
 	}: {
-		displayLanguages: DisplayLanguage[];
-		flags?: Record<string, string>;
+		languagesData: DisplayLanguage[];
 		isLoading?: boolean;
-		error?: Error | null;
-		skeletonCount?: number;
 		selectedEntry?: DisplayLanguage | null;
 		isOpen?: boolean;
 		showEnglishName?: boolean;
@@ -46,7 +39,7 @@
 		handleClose();
 	}
 
-	let filteredLanguages = $derived(filterLanguages(displayLanguages, searchTerm));
+	let filteredLanguages = $derived(filterLanguages(languagesData, searchTerm));
 </script>
 
 {#if isOpen}
@@ -56,52 +49,42 @@
 				<LanguageIcon width="20" height="20" />
 				<span>Select a Language</span>
 			</header>
-
-			{#if error}
-				<div class="ls-error">
-					<p>Failed to load languages</p>
-					<p class="ls-error-details">{error.message}</p>
-				</div>
-			{:else}
-				<div class="ls-content">
-					{#if isLoading}
-						<div class="ls-loading-overlay">
-							<div class="ls-spinner"></div>
-						</div>
-					{/if}
-
-					{#if selectedEntry}
-						<SelectedLanguageDisplay
-							language={selectedEntry}
-							{flags}
-							{showFlags}
-							showEnglishName={showEnglishName && !!selectedEntry.endonym && selectedEntry.endonym !== selectedEntry.name}
-						/>
-						<hr />
-					{/if}
-
-					<SearchInput bind:value={searchTerm} />
-
-					<div class="ls-list">
-						{#if displayLanguages.length > 0}
-							{#each filteredLanguages as language (language.code)}
-								<LanguageOption
-									{language}
-									{flags}
-									{showFlags}
-									showEnglishName={showEnglishName && !!language.endonym && language.endonym !== language.name}
-									selected={selectedEntry?.code === language.code}
-									onclick={() => handleSelect(language.code)}
-								/>
-							{/each}
-						{:else}
-							{#each Array(skeletonCount) as _, i (i)}
-								<div class="ls-option-placeholder"></div>
-							{/each}
-						{/if}
+			<div class="ls-content">
+				{#if isLoading}
+					<div class="ls-loading-overlay">
+						<div class="ls-spinner"></div>
 					</div>
+				{/if}
+
+				{#if selectedEntry}
+					<SelectedLanguageDisplay
+						language={selectedEntry}
+						{showFlags}
+						showEnglishName={showEnglishName && !!selectedEntry.endonym && selectedEntry.endonym !== selectedEntry.name}
+					/>
+					<hr />
+				{/if}
+
+				<SearchInput bind:value={searchTerm} />
+
+				<div class="ls-list">
+					{#if languagesData.length > 0}
+						{#each filteredLanguages as language (language.code)}
+							<LanguageOption
+								{language}
+								{showFlags}
+								showEnglishName={showEnglishName && !!language.endonym && language.endonym !== language.name}
+								selected={selectedEntry?.code === language.code}
+								onclick={() => handleSelect(language.code)}
+							/>
+						{/each}
+					{:else}
+						{#each Array(languagesData.length) as _, i (i)}
+							<div class="ls-option-placeholder"></div>
+						{/each}
+					{/if}
 				</div>
-			{/if}
+			</div>
 		</div>
 	</Modal>
 {/if}
@@ -155,14 +138,7 @@
 		to { transform: rotate(360deg); }
 	}
 
-	.ls-error {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1rem;
-		padding: 2rem 1rem;
-		color: var(--ls-fg-muted);
-	}
+
 
 	.ls-header {
 		display: flex;

@@ -1,16 +1,14 @@
 <script lang="ts">
-	import { svgToDataUri, type DisplayLanguage } from '../language-selector.ts';
+	import type { DisplayLanguage } from '../types.ts';
 
 	let {
 		language,
-		flags,
 		showFlags = false,
 		showEnglishName = true,
 		selected = false,
 		onclick
 	}: {
 		language: DisplayLanguage;
-		flags?: Record<string, string>;
 		showFlags?: boolean;
 		showEnglishName?: boolean;
 		selected?: boolean;
@@ -19,8 +17,8 @@
 </script>
 
 <button class="ls-dropdown-option" class:selected {onclick} type="button">
-	{#if showFlags && language.flagCodes.length > 0 && flags && flags[language.flagCodes[0]]}
-		<img class="ls-flag-sm" src={svgToDataUri(flags[language.flagCodes[0]])} alt="" />
+	{#if showFlags && language.flagSvgDataUris.length > 0}
+		<img class="ls-flag-sm" src={language.flagSvgDataUris[0]} alt="" />
 	{/if}
 	<div class="ls-dropdown-option-text">
 		<span class="ls-dropdown-native">{language.endonym || language.name}</span>

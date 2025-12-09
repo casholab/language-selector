@@ -1,15 +1,13 @@
 <script lang="ts">
-	import type { DisplayLanguage } from '../language-selector.ts';
+	import type { DisplayLanguage } from '../types.ts';
 	import FlagDisplay from './FlagDisplay.svelte';
 
 	let {
 		language,
-		flags,
 		showFlags = false,
 		showEnglishName = true
 	}: {
 		language: DisplayLanguage;
-		flags?: Record<string, string>;
 		showFlags?: boolean;
 		showEnglishName?: boolean;
 	} = $props();
@@ -40,8 +38,8 @@
 			{/if}
 		</div>
 	{/if}
-	{#if showFlags && language.flagCodes.length > 0 && flags}
-		<FlagDisplay flagCodes={language.flagCodes} {flags} size="lg" />
+	{#if showFlags && language.flagSvgDataUris.length > 0}
+		<FlagDisplay srcList={language.flagSvgDataUris} size="lg" />
 	{/if}
 </div>
 

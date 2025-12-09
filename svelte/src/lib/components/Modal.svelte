@@ -97,6 +97,7 @@
         justify-content: center;
         align-items: flex-start;
         z-index: 1001;
+        box-sizing: border-box;
     }
     
     .ls-modal-body {
