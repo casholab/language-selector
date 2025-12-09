@@ -289,12 +289,6 @@ if (languagesFileDownloading) return;
 		color: var(--tb-accent);
 	}
 	
-	.file-controls {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
 	.action-btn {
 		padding: 0.375rem 0.5rem;
 		background: var(--tb-bg-card);
@@ -309,38 +303,10 @@ if (languagesFileDownloading) return;
 	}
 	
 	.action-btn:hover { border-color: var(--tb-fg-muted); }
-
-	.file-upload {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.375rem 0.5rem;
-		background: var(--tb-bg-card);
-		border: 1px solid var(--tb-border);
-		border-radius: 0.25rem;
-		font-family: inherit;
-		font-size: 0.75rem;
-		font-weight: 500;
-		color: var(--tb-fg);
-		cursor: pointer;
-	}
-	
-	.file-upload:hover { border-color: var(--tb-fg-muted); }
-	
-	.file-upload input {
-		display: none;
-	}
-
-	.file-loaded {
-		font-size: 0.75rem;
-		color: var(--tb-accent);
-		font-family: 'SF Mono', 'Fira Code', monospace;
-		margin-top: 0.25rem;
-	}
-
 	@media (max-width: 700px) {
 		.testbed {
 			grid-template-columns: 1fr;
+			height: unset;
 		}
 
 		.controls { order: 2; }
@@ -349,12 +315,16 @@ if (languagesFileDownloading) return;
 		.preset-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
+
+		.controls-title{
+			display:none;
+		}
 	}
 </style>
 
 <div class="testbed">
 	<aside class="controls">
-		<h1>Language Selector Playground</h1>
+		<h1 class="controls-title">Language Selector Playground</h1>
 		
 		<div class="options-card">
 			<section class="control-group">

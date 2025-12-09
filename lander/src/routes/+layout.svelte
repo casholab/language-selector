@@ -149,6 +149,12 @@
 		background: var(--tb-bg);
 	}
 
+	@media(max-width:1000px){
+		.header-inner{
+			flex-direction: column;
+		}
+	}
+
 
 	@media (max-width: 640px) {
 		.testbed-logo {
