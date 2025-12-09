@@ -17,9 +17,9 @@
     }
 </script>
 <svelte:window onkeydown={(e) => e.key === 'Escape' && bgCloses && close()}/>
-<div class="ls-modal-outer">
+<div class="ls-modal-outer" >
     <div 
-        transition:fade={{duration:100}}
+        transition:fade={{duration:150}}
         class="ls-modal-overlay" 
         onclick={handleBackdropClick}
         aria-label="Close modal"
@@ -29,7 +29,7 @@
     ></div>
     <div 
         class="ls-modal-container" 
-        transition:scale={{ duration: 200, start: 0.95 }}
+        transition:scale={{ duration: 150, start: 0.95 }}
     >
         <div class="ls-modal-body">
             {#if xbutton}
