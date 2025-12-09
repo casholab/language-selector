@@ -27,6 +27,8 @@
 	let searchTerm = $state('');
 	let openUpward = $state(false);
 	let alignRight = $state(false);
+	let leftShift = $state(0);
+	let pixelRef: HTMLSpanElement;
 
 	function handleClose() {
 		close();
@@ -45,36 +47,39 @@
 	}
 
 	function setupDropdown(node: HTMLDivElement) {
-		// 1. Positioning
-		const rect = node.getBoundingClientRect();
-		const viewportHeight = window.innerHeight;
-		const viewportWidth = window.innerWidth;
+		const pixelRect = pixelRef.getBoundingClientRect();
+		const dropdownRect = node.getBoundingClientRect();
+		const viewportHeight = document.documentElement.clientHeight;
+		const viewportWidth = document.documentElement.clientWidth;
+		const dropdownHeight = dropdownRect.height;
+		const dropdownWidth = dropdownRect.width;
+		const topLeftY = pixelRect.top;
+		const topLeftX = pixelRect.left;
 
-		//PSeudo Code;
-		//IF right top 
+		const spaceBelow = viewportHeight - topLeftY;
+		openUpward = spaceBelow < dropdownHeight && topLeftY > dropdownHeight;
 
-		
-		// Vertical positioning
-		const spaceBelow = viewportHeight - rect.top;
-		const dropdownHeight = rect.height;
-		openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+		const spaceRight = viewportWidth - topLeftX;
+		const spaceLeft = topLeftX;
 
-		// Horizontal positioning
-		if (rect.right > viewportWidth) {
+		if (spaceRight < dropdownWidth && spaceLeft < dropdownWidth) {
+			alignRight = false;
+			leftShift = -topLeftX;
+		} else if (spaceRight < dropdownWidth) {
 			alignRight = true;
+			leftShift = 0;
+		} else {
+			alignRight = false;
+			leftShift = 0;
 		}
 
-		// 2. Click Outside Handler
 		function handleWindowClick(e: MouseEvent) {
-			// If click is inside the dropdown, do nothing (reset)
 			if (node.contains(e.target as Node)) {
 				return;
 			}
-			// If click is outside, close
 			handleClose();
 		}
 
-		// Delay attaching the listener to avoid catching the opening click event
 		const timer = setTimeout(() => {
 			window.addEventListener('click', handleWindowClick);
 		}, 0);
@@ -88,16 +93,20 @@
 	}
 
 	let filteredLanguages = $derived(filterLanguages(languagesData, searchTerm));
+	const uuid = crypto.randomUUID();
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
+<span class="ls-pixel" bind:this={pixelRef}></span>
 {#if isOpen}
+{#key uuid}
 	<div
 		use:setupDropdown
 		class="ls-dropdown"
 		class:ls-dropdown-upward={openUpward}
 		class:ls-dropdown-right={alignRight}
+		style:transform={leftShift ? `translateX(${leftShift}px)` : undefined}
 	>
 		<div class="ls-dropdown-content">
 			{#if isLoading}
@@ -118,7 +127,7 @@
 					{#if filteredLanguages.length === 0}
 						<div class="ls-dropdown-empty">No languages found</div>
 					{/if}
-					{#each filteredLanguages as language (language.code)}
+					{#each filteredLanguages as language}
 						<DropdownOption
 							{language}
 							{showFlags}
@@ -135,9 +144,19 @@
 			</div>
 		</div>
 	</div>
+	{/key}
 {/if}
 
 <style>
+	.ls-pixel {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 0;
+		pointer-events: none;
+	}
+
 	.ls-dropdown {
 		position: absolute;
 		top: 100%;
@@ -157,14 +176,14 @@
 	}
 
 	.ls-dropdown-upward {
-		top: auto;
+		top: unset;
 		bottom: 100%;
 		margin-top: 0;
 		margin-bottom: 4px;
 	}
 
 	.ls-dropdown-right {
-		left: auto;
+		left: unset;
 		right: 0;
 	}
 

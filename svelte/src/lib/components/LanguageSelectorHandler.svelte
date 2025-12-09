@@ -54,7 +54,7 @@
 
 	
 	let displayLanguages = $derived.by((): DisplayLanguage[] => {
-		if (!languagesData) return Array(languages.length).fill({});
+		if (!languagesData) return [];
 		return buildDisplayLanguages(languagesData, flagMode, languagesData.flags);
 	});
 
