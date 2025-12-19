@@ -1,8 +1,8 @@
 <script lang="ts">
     import { LanguageSelector, generateStaticDataFile, downloadStaticDataFile} from "language-selector-svelte";
-import type {FlagDisplayMode, LanguageLookupResult, DisplayOptions, LoadOptions} from "language-selector-svelte";
+import type {FlagDisplayMode, DisplayOptions, DisplayLanguage} from "language-selector-svelte";
 
-	let selectedLanguage = $state<string | null>(null);
+	let selectedLanguage = $state<DisplayLanguage | null>(null);
 	let size = $state<"sm" | "lg">("lg");
 	let flagMode = $state<FlagDisplayMode>("all");
 	let isModal = $state(true);
@@ -49,8 +49,8 @@ import type {FlagDisplayMode, LanguageLookupResult, DisplayOptions, LoadOptions}
 		currentPreset = "default";
 	}
 
-	function handleSelection(code: string) {
-		console.log('[Testbed] Language selected:', code);
+	function handleSelection(lang: DisplayLanguage) {
+		console.log('[Testbed] Language selected:', lang.code);
 	}
 	let timeoutId: NodeJS.Timeout;
 	const throttledApplyLanguages = ()=>{
