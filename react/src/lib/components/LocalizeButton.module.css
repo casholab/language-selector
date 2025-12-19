@@ -28,3 +28,11 @@
   padding: 0.5rem;
 }
 
+.flag {
+  width: 20px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 2px;
+  filter: drop-shadow(0 0 1px var(--ls-border));
+}
+

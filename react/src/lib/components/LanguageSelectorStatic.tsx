@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react';
 import type { DisplayOptions } from '../types';
+import type { DisplayLanguage } from '../language-selector';
 import { loadDataFromFile } from '../language-file';
 import { LanguageSelectorHandler } from './LanguageSelectorHandler';
 
 interface LanguageSelectorStaticProps {
   staticFileData: string | object;
-  selectedLanguage?: string | null;
-  onSelectedLanguageChange?: (language: string | null) => void;
-  onSelection?: (language: string) => void;
+  selectedLanguage?: DisplayLanguage | null;
+  onSelectedLanguageChange?: (language: DisplayLanguage | null) => void;
+  onSelection?: (language: DisplayLanguage) => void;
   displayOptions?: DisplayOptions;
 }
 

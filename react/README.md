@@ -16,19 +16,22 @@ pnpm install language-selector-react
 - Efficient loading. 
 - Batch loading for sequential fetch environments.
 - Customizable display options.
+- Auto-select browser locale.
+- Display selected language on button with flag.
 
 ## Basic Usage
 
 ```tsx
+import { useState } from 'react';
 import { LanguageSelector } from 'language-selector-react';
+import type { DisplayLanguage } from 'language-selector-react';
 import 'language-selector-react/styles.css';
 
 function App() {
-    const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+    const [selectedLanguage, setSelectedLanguage] = useState<DisplayLanguage | null>(null);
     
-    function handleSelection(language: string) {
-        console.log("Selected Language: ", language);
-        // do something with the language code
+    function handleSelection(language: DisplayLanguage) {
+        console.log("Selected Language: ", language.code, language.endonym);
     }
 
     return (
@@ -46,32 +49,36 @@ function App() {
                 loadOptions={{apiUrl: "https://customapi.com", flagLoadMode: "single"}}
             /> 
 
-            <div>Selected Language: {selectedLanguage}</div>
+            <div>Selected: {selectedLanguage?.code} - {selectedLanguage?.endonym}</div>
         </>
     );
 }
 ```
+
 Options Example
 ```tsx
 <LanguageSelector 
     selectedLanguage={selectedLanguage}
     onSelectedLanguageChange={setSelectedLanguage}
-    languages={["en", "es", "fr", "id", "zh-Hans", "zh-TW"]} // BCP-47 language codes
+    languages={["en", "es", "fr", "id", "zh-Hans", "zh-TW"]}
     displayOptions={{
-        isModal: false, // modal or dropdown
-        flagMode: "all", // "all" | "single" | "none"
-        buttonSize: "sm", // "sm" | "lg"
-        showEnglishName: true // true | false
+        isModal: false,           // modal or dropdown
+        flagMode: "all",          // "all" | "single" | "none"
+        buttonSize: "sm",         // "sm" | "lg"
+        showEnglishName: true,    // show English name alongside native
+        placeholderText: "Language",  // button text when nothing selected
+        displaySelected: true     // show selected language on button
     }} 
     loadOptions={{
-        apiUrl: "https://customapi.com", // optional custom API
-        flagLoadMode: "single" // "single" | "multi"
+        apiUrl: "https://customapi.com",
+        flagLoadMode: "single",   // "single" | "multi"
+        autoSelect: true          // auto-select browser locale
     }}
 />
 ```
 
 ### languages
-Uses bcp-47 language codes (although also has falls back for names and endonyms)\
+Uses bcp-47 language codes (with fallback support for names and endonyms)\
 (xx-Xxxx-XX-xyz | language-script-region-variants/extensions)
 example : "en", "es", "zh-TW", "zh-Hans-CN" 
 example with regions: "es-CO", "es-ES"
@@ -82,14 +89,24 @@ https://developer.mozilla.org/en-US/docs/Glossary/BCP_47_language_tag for more i
 
 ### controlled state
 
-selectedLanguage: LanguageCode | null
-onSelectedLanguageChange: (language: LanguageCode | null) => void
+selectedLanguage: DisplayLanguage | null
+onSelectedLanguageChange: (language: DisplayLanguage | null) => void
+
+The `DisplayLanguage` object contains:
+- `code`: BCP-47 language code
+- `name`: English name
+- `endonym`: Native name
+- `regionNameEnglish?`: English region name
+- `regionNameNative?`: Native region name
+- `scriptNameEnglish?`: English script name
+- `scriptNameLocal?`: Native script name
+- `flagSvgDataUris`: Array of flag SVG data URIs
 
 ### callback function
 
-onSelection: (language: LanguageCode) => void
+onSelection: (language: DisplayLanguage) => void
 
-returns back the bcp-47 language code of the selected language
+Returns the full DisplayLanguage object for the selected language.
 
 
 ### options
@@ -98,16 +115,31 @@ returns back the bcp-47 language code of the selected language
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| isModal | boolean | true | Whether to show the modal or dropdown |
-| flagMode | string | "all" | The flag mode to use | "none", "single", "all" |
-| buttonSize | string | "lg" | The button size to use | "sm", "lg" |
-| showEnglishName | boolean | true | Whether to show the english names |
+| isModal | boolean | true | Show as modal overlay or inline dropdown |
+| flagMode | "none" \| "single" \| "all" | "single" | How flags are displayed |
+| buttonSize | "sm" \| "lg" | "lg" | Button size |
+| showEnglishName | boolean | false | Show English name alongside native name |
+| placeholderText | string | "Language" | Button text when nothing selected |
+| displaySelected | boolean | false | Show selected language name and flag on button |
 
 #### loadOptions
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| apiUrl | string | "https://lsapi.casholab.com" | The api url to use |
-| flagLoadMode | FlagLoadMode: "single" \\ "multi  | The flag load mode to use |
+| apiUrl | string | "https://lsapi.casholab.com" | API endpoint URL |
+| flagLoadMode | "single" \| "multi" | "multi" | Load flags individually or batch |
+| autoSelect | boolean | false | Auto-select matching browser locale on mount |
+
+### Utility Functions
+
+```typescript
+import { getBrowserLocales, findMatchingLanguage } from "language-selector-react";
+
+// Get browser's preferred locales
+const locales = getBrowserLocales(); // ["en-US", "en", "fr"]
+
+// Find matching language from available options
+const match = findMatchingLanguage(locales, displayLanguages);
+```
 
 
 ## Configuration
@@ -160,4 +192,3 @@ You can override colors by looking at the source css file and using !important t
 
 Data pulled from casholab/languages database 
 github:https://github.com/casholab/languages
-

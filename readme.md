@@ -9,6 +9,8 @@ Full Landing page at: [ls.casholab.com](https://ls.casholab.com)
 - Static file support for offline mode
 - Efficient loading with batch loading for sequential fetch environments
 - Customizable display options
+- Auto-select browser locale
+- Display selected language on button with flag
 
 ## Supported Frameworks
 1. HTML/JS/CSS (default web standards)
@@ -31,14 +33,41 @@ Format: `language-script-region-variants/extensions`
 
 See [MDN BCP 47 documentation](https://developer.mozilla.org/en-US/docs/Glossary/BCP_47_language_tag) or [CLDR BCP47 Extension](https://cldr.unicode.org/index/bcp47-extension) for more information.
 
+## Return Type
+
+All framework libraries return a `DisplayLanguage` object on selection:
+
+```typescript
+interface DisplayLanguage {
+  code: string;           // BCP-47 language code
+  name: string;           // English name
+  endonym: string;        // Native name
+  regionNameEnglish?: string;
+  regionNameNative?: string;
+  scriptNameEnglish?: string;
+  scriptNameLocal?: string;
+  flagSvgDataUris: string[];
+}
+```
+
 ## Display Options
 
-| Option | Values | Description |
-|--------|--------|-------------|
-| Layout | modal, dropdown | Show as modal overlay or inline dropdown |
-| Flag mode | none, single, all | How flags are displayed for languages with multiple regions |
-| Button size | small, large | Size of the selector button |
-| Show English name | true, false | Display English name alongside native name |
+| Option | Values | Default | Description |
+|--------|--------|---------|-------------|
+| isModal | true, false | true | Show as modal overlay or inline dropdown |
+| flagMode | "none", "single", "all" | "single" | How flags are displayed for languages with multiple regions |
+| buttonSize | "sm", "lg" | "lg" | Size of the selector button |
+| showEnglishName | true, false | false | Display English name alongside native name |
+| placeholderText | string | "Language" | Button text when nothing selected |
+| displaySelected | true, false | false | Show selected language name and flag on button |
+
+## Load Options
+
+| Option | Values | Default | Description |
+|--------|--------|---------|-------------|
+| apiUrl | string | "https://lsapi.casholab.com" | Custom API endpoint URL |
+| flagLoadMode | "single", "multi" | "multi" | Load flags individually or all at once |
+| autoSelect | true, false | false | Auto-select matching browser locale on mount |
 
 ## Configuration
 
@@ -51,13 +80,6 @@ This is a public endpoint maintained on a best-effort basis. For 100% reliabilit
 You can host your own API endpoint using:
 - [Cloudflare Workers (D1)](api-cf-d1-workers)
 - [Go Server](api-go)
-
-### Load Options
-
-| Option | Description |
-|--------|-------------|
-| API URL | Custom API endpoint URL |
-| Flag load mode | `single` (individual requests) or `multi` (batch load all flags) |
 
 ### Flag Considerations
 Flags are large assets that can be loaded remotely or embedded as SVGs in a JSON file. By default, flags load through individual requests. 

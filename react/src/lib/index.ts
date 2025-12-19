@@ -28,5 +28,5 @@ export {
 } from './components';
 
 export type { DisplayLanguage } from './language-selector';
-export { buildDisplayLanguages, filterLanguages, svgToDataUri } from './language-selector';
+export { buildDisplayLanguages, filterLanguages, svgToDataUri, getBrowserLocales, findMatchingLanguage } from './language-selector';
 

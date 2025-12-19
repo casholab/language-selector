@@ -161,6 +161,14 @@ export const CSS = `
   padding: 0.5rem;
 }
 
+.ls-btn-flag {
+  width: 20px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 2px;
+  filter: drop-shadow(0 0 1px var(--ls-border));
+}
+
 .ls-modal-outer {
   z-index: 1000;
   position: fixed;
@@ -296,13 +304,13 @@ export const CSS = `
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem 1rem;
+  gap: 0.5rem;
   scrollbar-color: var(--ls-border) transparent;
 }
 
 .ls-option {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: start;
   gap: 0.75rem;
   padding: var(--ls-padding);
@@ -311,9 +319,16 @@ export const CSS = `
   border-radius: var(--ls-radius);
   cursor: pointer;
   text-align: left;
+  max-width: 260px;
+  overflow: hidden;
   width: 100%;
-  max-width: 360px;
   font-family: inherit;
+}
+
+@media (max-width: 1000px) {
+  .ls-option {
+    max-width: unset;
+  }
 }
 
 .ls-option:hover {
@@ -345,9 +360,15 @@ export const CSS = `
   color: var(--ls-fg-muted);
 }
 
-.ls-option-meta {
+.ls-option-meta-container {
   display: flex;
   flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ls-option-meta {
+  display: flex;
+  gap: 0.5em;
   justify-content: flex-start;
   min-width: 50px;
 }
@@ -355,7 +376,7 @@ export const CSS = `
 .ls-meta-native {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--ls-fg);
+  color: color-mix(in srgb, var(--ls-fg) 60%, gray 40%);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

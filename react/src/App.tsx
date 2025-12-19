@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { LanguageSelector } from './lib';
-import type { LanguageCode } from './lib';
+import type { DisplayLanguage } from './lib/language-selector';
 
 const TEST_LANGUAGES = [
   'en',
@@ -24,9 +24,9 @@ const TEST_LANGUAGES = [
 ];
 
 function App() {
-  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | null>(null);
-  const [selectedLanguage2, setSelectedLanguage2] = useState<LanguageCode | null>(null);
-  const [selectedLanguage3, setSelectedLanguage3] = useState<LanguageCode | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<DisplayLanguage | null>(null);
+  const [selectedLanguage2, setSelectedLanguage2] = useState<DisplayLanguage | null>(null);
+  const [selectedLanguage3, setSelectedLanguage3] = useState<DisplayLanguage | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
 
   const getThemeClass = () => {
@@ -36,7 +36,7 @@ function App() {
 
   return (
     <div className={getThemeClass()} style={{ minHeight: '100vh', padding: '2rem', background: 'var(--ls-bg)' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '840px', margin: '0 auto' }}>
         <h1 style={{ color: 'var(--ls-fg)', marginBottom: '2rem' }}>
           Language Selector React Test Page
         </h1>
@@ -93,14 +93,14 @@ function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <LanguageSelector
               languages={TEST_LANGUAGES}
-              displayOptions={{ flagMode: 'all', showEnglishName: true }}
+              displayOptions={{ flagMode: 'all', showEnglishName:true, displaySelected:true }}
               selectedLanguage={selectedLanguage}
               onSelectedLanguageChange={setSelectedLanguage}
               onSelection={(lang) => console.log('Selected:', lang)}
             />
             {selectedLanguage && (
               <span style={{ color: 'var(--ls-fg-muted)' }}>
-                Selected: <strong style={{ color: 'var(--ls-fg)' }}>{selectedLanguage}</strong>
+                Selected: <strong style={{ color: 'var(--ls-fg)' }}>{selectedLanguage.code}</strong>
               </span>
             )}
           </div>
@@ -123,7 +123,7 @@ function App() {
             />
             {selectedLanguage2 && (
               <span style={{ color: 'var(--ls-fg-muted)' }}>
-                Selected: <strong style={{ color: 'var(--ls-fg)' }}>{selectedLanguage2}</strong>
+                Selected: <strong style={{ color: 'var(--ls-fg)' }}>{selectedLanguage2.code}</strong>
               </span>
             )}
           </div>
@@ -146,7 +146,7 @@ function App() {
             />
             {selectedLanguage3 && (
               <span style={{ color: 'var(--ls-fg-muted)' }}>
-                Selected: <strong style={{ color: 'var(--ls-fg)' }}>{selectedLanguage3}</strong>
+                Selected: <strong style={{ color: 'var(--ls-fg)' }}>{selectedLanguage3.code}</strong>
               </span>
             )}
           </div>

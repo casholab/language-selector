@@ -2,5 +2,5 @@ export type { LanguageCode, LanguageLookupResult, FlagDisplayMode, DisplayOption
 export { loadDataFromFile, generateStaticDataFile, downloadStaticDataFile } from './language-file';
 export { LanguageSelector, LanguageSelectorStatic, LanguageSelectorHandler, LanguageModal, LanguageDropdown, LanguageOption, DropdownOption, FlagDisplay, LocalizeButton, Modal, SearchInput, SelectedLanguageDisplay, } from './components';
 export type { DisplayLanguage } from './language-selector';
-export { buildDisplayLanguages, filterLanguages, svgToDataUri } from './language-selector';
+export { buildDisplayLanguages, filterLanguages, svgToDataUri, getBrowserLocales, findMatchingLanguage } from './language-selector';
 //# sourceMappingURL=index.d.ts.map

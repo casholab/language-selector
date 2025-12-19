@@ -7,6 +7,8 @@ import type {FlagDisplayMode, LanguageLookupResult, DisplayOptions, LoadOptions}
 	let flagMode = $state<FlagDisplayMode>("all");
 	let isModal = $state(true);
 	let showEnglishName = $state(true);
+	let placeholderText = $state("Select Language");
+	let displaySelected = $state(true);
 	
 	const presets = {
 		default: ["en", "es", "fr", "id", "zh-TW", "zh-CN", "pt-BR", "pt-PT", "sr-Latn", "sr-Cyrl"],
@@ -27,7 +29,9 @@ import type {FlagDisplayMode, LanguageLookupResult, DisplayOptions, LoadOptions}
 		buttonSize: size,
 		flagMode,
 		isModal,
-		showEnglishName
+		showEnglishName,
+		placeholderText,
+		displaySelected
 	})
 
 	function applyPreset(preset: keyof typeof presets) {
@@ -206,6 +210,19 @@ if (languagesFileDownloading) return;
 	}
 
 	.textarea-wrap textarea:focus { outline: none; }
+
+	.textarea-wrap input {
+		width: 100%;
+		padding: 0.5rem;
+		background: transparent;
+		border: none;
+		border-radius: 0.375rem;
+		font-family: 'SF Mono', 'Fira Code', monospace;
+		font-size: 0.75rem;
+		color: var(--tb-fg);
+	}
+
+	.textarea-wrap input:focus { outline: none; }
 	.btn-group {
 		display: flex;
 		gap: 0.25rem;
@@ -380,16 +397,35 @@ if (languagesFileDownloading) return;
 				</div>
 			</section>
 
-			<section class="control-group">
-				<h2>Show English Name</h2>
-				<div class="btn-group">
-					<button class:active={showEnglishName} onclick={() => showEnglishName = true}>Show</button>
-					<button class:active={!showEnglishName} onclick={() => showEnglishName = false}>Hide</button>
-				</div>
-			</section>
+		<section class="control-group">
+			<h2>Show English Name</h2>
+			<div class="btn-group">
+				<button class:active={showEnglishName} onclick={() => showEnglishName = true}>Show</button>
+				<button class:active={!showEnglishName} onclick={() => showEnglishName = false}>Hide</button>
+			</div>
+		</section>
 
-			<section class="control-group">
-				<h2>Download Static Data File</h2>
+		<section class="control-group">
+			<h2>Display Selected</h2>
+			<div class="btn-group">
+				<button class:active={displaySelected} onclick={() => displaySelected = true}>Show</button>
+				<button class:active={!displaySelected} onclick={() => displaySelected = false}>Hide</button>
+			</div>
+		</section>
+
+		<section class="control-group">
+			<h2>Placeholder Text</h2>
+			<div class="textarea-wrap">
+				<input 
+					type="text"
+					bind:value={placeholderText}
+					placeholder="Select Language"
+				/>
+			</div>
+		</section>
+
+		<section class="control-group">
+			<h2>Download Static Data File</h2>
 				<button class="action-btn" onclick={downloadLanguageData}>
 				{languagesFileDownloading ? "Downloading..." : "Download"}
 				</button>
@@ -406,19 +442,21 @@ if (languagesFileDownloading) return;
 		<section class="output-section">
 			<h2>Component Preview</h2>
 			<div class="component-area">
-				{#key [flagMode, languages.join(",")]}
-				<LanguageSelector 
-					bind:selectedLanguage 
-					{languages} 
-					onSelection={handleSelection}
-					displayOptions={{ 
-						buttonSize: size,
-						flagMode,
-						isModal,
-						showEnglishName
-					}} 
-				/>
-				{/key}
+			{#key [flagMode, languages.join(",")]}
+			<LanguageSelector 
+				bind:selectedLanguage 
+				{languages} 
+				onSelection={handleSelection}
+				displayOptions={{ 
+					buttonSize: size,
+					flagMode,
+					isModal,
+					showEnglishName,
+					placeholderText,
+					displaySelected
+				}} 
+			/>
+			{/key}
 			</div>
 		</section>
 
@@ -432,6 +470,8 @@ if (languagesFileDownloading) return;
 			<div class="state-row"><span>flags</span><code>{flagMode}</code></div>
 			<div class="state-row"><span>isModal</span><code>{isModal}</code></div>
 			<div class="state-row"><span>showEnglishName</span><code>{showEnglishName}</code></div>
+			<div class="state-row"><span>displaySelected</span><code>{displaySelected}</code></div>
+			<div class="state-row"><span>placeholderText</span><code>"{placeholderText}"</code></div>
 			<div class="state-row">
 				<span>languages</span>
 				<div class="lang-tags">

@@ -11,6 +11,9 @@ export interface EmbedConfig {
   apiUrl: string;
   flagLoadMode: FlagLoadMode;
   callback?: string;
+  placeholderText: string;
+  displaySelected: boolean;
+  autoSelect: boolean;
 }
 
 export interface LanguageData {

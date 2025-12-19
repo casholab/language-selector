@@ -3,9 +3,7 @@ import { LanguageCode } from '../types';
 import { DisplayLanguage } from '../language-selector';
 interface LanguageModalProps {
     displayLanguages: DisplayLanguage[];
-    flags?: Record<string, string>;
     isLoading?: boolean;
-    error?: Error | null;
     skeletonCount?: number;
     selectedEntry?: DisplayLanguage | null;
     isOpen: boolean;

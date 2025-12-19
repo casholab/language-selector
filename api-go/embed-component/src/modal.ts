@@ -71,20 +71,22 @@ function renderOption(lang: DisplayLanguage, showFlags: boolean, showEnglishName
   
   let metaPart = '';
   if (hasVariant) {
+    let metaContent = '';
     if (lang.regionNameNative || lang.regionNameEnglish) {
       const showRegionEnglish = showEnglishName && lang.regionNameEnglish && (!lang.regionNameNative || lang.regionNameNative.toLowerCase() !== lang.regionNameEnglish.toLowerCase());
-      metaPart += `<div class="ls-option-meta">
+      metaContent += `<div class="ls-option-meta">
         <div class="ls-meta-native">${lang.regionNameNative || ''}</div>
         ${showRegionEnglish ? `<div class="ls-meta-english">${lang.regionNameEnglish}</div>` : ''}
       </div>`;
     }
     if (lang.scriptNameLocal || lang.scriptNameEnglish) {
       const showScriptEnglish = showEnglishName && lang.scriptNameEnglish && (!lang.scriptNameLocal || lang.scriptNameLocal.toLowerCase() !== lang.scriptNameEnglish.toLowerCase());
-      metaPart += `<div class="ls-option-meta">
+      metaContent += `<div class="ls-option-meta">
         <div class="ls-meta-native">${lang.scriptNameLocal || ''}</div>
         ${showScriptEnglish ? `<div class="ls-meta-english">${lang.scriptNameEnglish}</div>` : ''}
       </div>`;
     }
+    metaPart = `<div class="ls-option-meta-container">${metaContent}</div>`;
   }
   
   const englishPart = showEnglishName && lang.endonym && lang.endonym !== lang.name

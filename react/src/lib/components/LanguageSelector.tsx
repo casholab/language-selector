@@ -1,14 +1,15 @@
 import React from 'react';
-import type { LanguageCode, DisplayOptions, LoadOptions } from '../types';
+import type { DisplayOptions, LoadOptions } from '../types';
+import type { DisplayLanguage } from '../language-selector';
 import { LanguageSelectorHandler } from './LanguageSelectorHandler';
 
 interface LanguageSelectorProps {
   languages: string[];
   displayOptions?: DisplayOptions;
   loadOptions?: LoadOptions;
-  selectedLanguage?: LanguageCode | null;
-  onSelectedLanguageChange?: (language: LanguageCode | null) => void;
-  onSelection?: (language: LanguageCode) => void;
+  selectedLanguage?: DisplayLanguage | null;
+  onSelectedLanguageChange?: (language: DisplayLanguage | null) => void;
+  onSelection?: (language: DisplayLanguage) => void;
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({

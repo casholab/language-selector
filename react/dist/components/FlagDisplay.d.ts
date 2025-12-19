@@ -1,7 +1,6 @@
 import { default as React } from 'react';
 interface FlagDisplayProps {
-    flagCodes: string[];
-    flags?: Record<string, string>;
+    flagSvgDataUris: string[];
     size?: 'sm' | 'md' | 'lg';
 }
 export declare const FlagDisplay: React.FC<FlagDisplayProps>;

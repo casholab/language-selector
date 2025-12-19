@@ -1,18 +1,52 @@
 import { LanguageIcon, ChevronDownIcon } from './icons';
-import type { ButtonSize } from './types';
+import type { ButtonSize, DisplayLanguage } from './types';
 
-export function createButton(size: ButtonSize, onHover: () => void, onClick: () => void): HTMLButtonElement {
+export interface ButtonOptions {
+  size: ButtonSize;
+  text: string;
+  displaySelected: boolean;
+  showFlag: boolean;
+  selectedLanguage: DisplayLanguage | null;
+  onHover: () => void;
+  onClick: () => void;
+}
+
+export function createButton(options: ButtonOptions): HTMLButtonElement {
   const btn = document.createElement('button');
-  btn.className = size === 'sm' ? 'ls-btn sm' : 'ls-btn';
+  btn.className = options.size === 'sm' ? 'ls-btn sm' : 'ls-btn';
   btn.type = 'button';
   
-  btn.innerHTML = size === 'lg' 
-    ? `${LanguageIcon}<span>Localize</span>${ChevronDownIcon}`
-    : LanguageIcon;
+  updateButtonContent(btn, options);
   
-  btn.addEventListener('mouseenter', onHover);
-  btn.addEventListener('click', onClick);
+  btn.addEventListener('mouseenter', options.onHover);
+  btn.addEventListener('click', options.onClick);
   
   return btn;
+}
+
+export function updateButtonContent(btn: HTMLButtonElement, options: ButtonOptions): void {
+  const { size, text, displaySelected, showFlag, selectedLanguage } = options;
+  
+  const displayText = displaySelected && selectedLanguage
+    ? selectedLanguage.endonym || selectedLanguage.name
+    : text;
+  
+  const flagSrc = displaySelected && showFlag && selectedLanguage?.flagSvgDataUris?.length
+    ? selectedLanguage.flagSvgDataUris[0]
+    : null;
+  
+  const hasSelection = displaySelected && selectedLanguage;
+  
+  if (size === 'lg') {
+    const iconHtml = hasSelection && flagSrc
+      ? `<img class="ls-btn-flag" src="${flagSrc}" alt="" />`
+      : LanguageIcon;
+    btn.innerHTML = `${iconHtml}<span>${displayText}</span>${ChevronDownIcon}`;
+  } else {
+    const flagHtml = hasSelection && flagSrc
+      ? `<img class="ls-btn-flag" src="${flagSrc}" alt="" />`
+      : '';
+    btn.innerHTML = `${LanguageIcon}${flagHtml}`;
+  }
 }
 

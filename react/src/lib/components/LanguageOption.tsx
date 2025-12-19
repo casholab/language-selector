@@ -41,7 +41,7 @@ export const LanguageOption: React.FC<LanguageOptionProps> = ({
         )}
       </div>
       {hasVariant && (
-        <>
+        <div className={styles.metaContainer}>
           {(language.regionNameNative || language.regionNameEnglish) && (
             <div className={styles.meta}>
               <div className={styles.metaNative}>
@@ -74,7 +74,7 @@ export const LanguageOption: React.FC<LanguageOptionProps> = ({
                 )}
             </div>
           )}
-        </>
+        </div>
       )}
     </button>
   );

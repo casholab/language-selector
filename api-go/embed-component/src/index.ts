@@ -1,5 +1,5 @@
 import { injectStyles } from './styles';
-import { createButton } from './button';
+import { createButton, updateButtonContent, type ButtonOptions } from './button';
 import { openModal, updateModal, closeModal } from './modal';
 import { openDropdown, updateDropdown, closeDropdown } from './dropdown';
 import type { EmbedConfig, LanguageLookupResult, DisplayLanguage, FlagDisplayMode } from './types';
@@ -13,12 +13,51 @@ function parseConfig(el: HTMLElement): EmbedConfig {
     languages,
     isModal: el.getAttribute('is-modal') !== 'false',
     showEnglishName: el.getAttribute('show-english-name') !== 'false',
-    flagMode: (el.getAttribute('flag-mode') as FlagDisplayMode) || 'none',
+    flagMode: (el.getAttribute('flag-mode') as FlagDisplayMode) || 'single',
     buttonSize: el.getAttribute('button-size') === 'sm' ? 'sm' : 'lg',
     apiUrl: el.getAttribute('api-url') || DEFAULT_API_URL,
     flagLoadMode: el.getAttribute('flag-load-mode') === 'single' ? 'single' : 'multi',
-    callback: el.getAttribute('callback') || undefined
+    callback: el.getAttribute('callback') || undefined,
+    placeholderText: el.getAttribute('placeholder-text') || 'Language',
+    displaySelected: el.getAttribute('display-selected') === 'true',
+    autoSelect: el.getAttribute('auto-select') === 'true'
   };
+}
+
+function getBrowserLocales(): string[] {
+  if (typeof navigator === 'undefined') return [];
+  return navigator.languages?.slice() ?? (navigator.language ? [navigator.language] : []);
+}
+
+function findMatchingLanguage(
+  browserLocales: string[],
+  availableLanguages: DisplayLanguage[]
+): DisplayLanguage | null {
+  const availableCodes = availableLanguages.map((l) => l.code.toLowerCase());
+  const availableMap = new Map(availableLanguages.map((l) => [l.code.toLowerCase(), l]));
+
+  for (const browserLocale of browserLocales) {
+    const normalized = browserLocale.toLowerCase();
+
+    if (availableMap.has(normalized)) {
+      return availableMap.get(normalized)!;
+    }
+
+    const parsed = parseTag(browserLocale);
+    const langOnly = parsed.lang.toLowerCase();
+    if (availableMap.has(langOnly)) {
+      return availableMap.get(langOnly)!;
+    }
+
+    for (const code of availableCodes) {
+      const parsedAvailable = parseTag(code);
+      if (parsedAvailable.lang.toLowerCase() === langOnly) {
+        return availableMap.get(code)!;
+      }
+    }
+  }
+
+  return null;
 }
 
 function parseTag(tag: string): { lang: string; script?: string; region?: string } {
@@ -92,7 +131,7 @@ function buildDisplayLanguages(data: LanguageLookupResult, flagMode: FlagDisplay
       scriptNameLocal,
       flagSvgDataUris
     };
-  });
+  }).sort((a, b) => a.endonym.localeCompare(b.endonym));
 }
 
 function collectFlagCodes(data: LanguageLookupResult): string[] {
@@ -173,10 +212,28 @@ function initInstance(el: HTMLElement): void {
   let fetchedData: LanguageLookupResult | null = null;
   let isFetching = false;
   let error: Error | null = null;
+  let selectedLanguage: DisplayLanguage | null = null;
+  let hasAutoSelected = false;
   
   const wrapper = document.createElement('div');
   wrapper.className = 'ls-embed-wrapper';
   el.appendChild(wrapper);
+
+  function getButtonOptions(): ButtonOptions {
+    return {
+      size: config.buttonSize,
+      text: config.placeholderText,
+      displaySelected: config.displaySelected,
+      showFlag: config.flagMode !== 'none',
+      selectedLanguage,
+      onHover: handleHover,
+      onClick: handleOpen
+    };
+  }
+  
+  function updateButton(): void {
+    updateButtonContent(btn, getButtonOptions());
+  }
   
   async function loadData(): Promise<void> {
     if (isFetching || fetchedData) return;
@@ -190,6 +247,17 @@ function initInstance(el: HTMLElement): void {
       error = null;
       const displayLanguages = buildDisplayLanguages(fetchedData, config.flagMode);
       updateUI({ languages: displayLanguages, isLoading: false });
+      
+      if (config.autoSelect && !hasAutoSelected && !selectedLanguage) {
+        const browserLocales = getBrowserLocales();
+        const match = findMatchingLanguage(browserLocales, displayLanguages);
+        if (match) {
+          hasAutoSelected = true;
+          selectedLanguage = match;
+          updateButton();
+          handleSelectInternal(match);
+        }
+      }
     } catch (e) {
       error = e instanceof Error ? e : new Error(String(e));
       updateUI({ isLoading: false, error });
@@ -197,10 +265,20 @@ function initInstance(el: HTMLElement): void {
       isFetching = false;
     }
   }
+
+  function handleSelectInternal(language: DisplayLanguage): void {
+    if (config.callback && typeof (window as any)[config.callback] === 'function') {
+      (window as any)[config.callback](language);
+    }
+  }
   
   function handleSelect(code: string): void {
-    if (config.callback && typeof (window as any)[config.callback] === 'function') {
-      (window as any)[config.callback](code);
+    const displayLanguages = fetchedData ? buildDisplayLanguages(fetchedData, config.flagMode) : [];
+    const language = displayLanguages.find(l => l.code === code);
+    if (language) {
+      selectedLanguage = language;
+      updateButton();
+      handleSelectInternal(language);
     }
   }
   
@@ -249,7 +327,7 @@ function initInstance(el: HTMLElement): void {
     }
   }
   
-  const btn = createButton(config.buttonSize, handleHover, handleOpen);
+  const btn = createButton(getButtonOptions());
   wrapper.appendChild(btn);
 }
 

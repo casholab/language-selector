@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import type {
   LanguageCode,
   LanguageLookupResult,
@@ -6,7 +6,7 @@ import type {
   LoadOptions,
 } from '../types';
 import type { DisplayLanguage } from '../language-selector';
-import { buildDisplayLanguages } from '../language-selector';
+import { buildDisplayLanguages, getBrowserLocales, findMatchingLanguage } from '../language-selector';
 import { loadLanguageData } from '../loader';
 import '../language-selector.css';
 import { LanguageModal } from './LanguageModal';
@@ -19,9 +19,9 @@ interface LanguageSelectorHandlerProps {
   languages?: string[];
   displayOptions?: DisplayOptions;
   loadOptions?: LoadOptions;
-  selectedLanguage?: LanguageCode | null;
-  onSelectedLanguageChange?: (language: LanguageCode | null) => void;
-  onSelection?: (language: LanguageCode) => void;
+  selectedLanguage?: DisplayLanguage | null;
+  onSelectedLanguageChange?: (language: DisplayLanguage | null) => void;
+  onSelection?: (language: DisplayLanguage) => void;
 }
 
 export const LanguageSelectorHandler: React.FC<LanguageSelectorHandlerProps> = ({
@@ -33,15 +33,19 @@ export const LanguageSelectorHandler: React.FC<LanguageSelectorHandlerProps> = (
   onSelectedLanguageChange,
   onSelection,
 }) => {
-  const showEnglishName = displayOptions.showEnglishName ?? true;
-  const flagMode = displayOptions.flagMode ?? 'none';
+  const showEnglishName = displayOptions.showEnglishName ?? false;
+  const flagMode = displayOptions.flagMode ?? 'single';
   const isModal = displayOptions.isModal ?? true;
+  const placeholderText = displayOptions.placeholderText ?? 'Language';
+  const displaySelected = displayOptions.displaySelected ?? false;
+  const autoSelect = loadOptions.autoSelect ?? false;
 
-  const [internalSelectedLanguage, setInternalSelectedLanguage] = useState<LanguageCode | null>(null);
+  const [internalSelectedLanguage, setInternalSelectedLanguage] = useState<DisplayLanguage | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [fetchedData, setFetchedData] = useState<LanguageLookupResult | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isFetching, setIsFetching] = useState(false);
+  const hasAutoSelected = useRef(false);
 
   const isControlled = controlledSelectedLanguage !== undefined;
   const selectedLanguage = isControlled ? controlledSelectedLanguage : internalSelectedLanguage;
@@ -87,18 +91,42 @@ export const LanguageSelectorHandler: React.FC<LanguageSelectorHandlerProps> = (
 
   const selectedEntry = useMemo((): DisplayLanguage | null => {
     if (!selectedLanguage) return null;
-    return displayLanguages.find((l) => l.code === selectedLanguage) ?? null;
+    return displayLanguages.find((l) => l.code === selectedLanguage.code) ?? selectedLanguage;
   }, [selectedLanguage, displayLanguages]);
+
+  useEffect(() => {
+    if (autoSelect && !staticData && !fetchedData && !isFetching) {
+      loadData();
+    }
+  }, [autoSelect]);
+
+  useEffect(() => {
+    if (autoSelect && !hasAutoSelected.current && displayLanguages.length > 0 && !selectedLanguage) {
+      const browserLocales = getBrowserLocales();
+      const match = findMatchingLanguage(browserLocales, displayLanguages);
+      if (match) {
+        hasAutoSelected.current = true;
+        if (!isControlled) {
+          setInternalSelectedLanguage(match);
+        }
+        onSelectedLanguageChange?.(match);
+        onSelection?.(match);
+      }
+    }
+  }, [autoSelect, displayLanguages, selectedLanguage, isControlled, onSelectedLanguageChange, onSelection]);
 
   const selectLanguage = useCallback(
     (code: LanguageCode) => {
-      if (!isControlled) {
-        setInternalSelectedLanguage(code);
+      const entry = displayLanguages.find((l) => l.code === code);
+      if (entry) {
+        if (!isControlled) {
+          setInternalSelectedLanguage(entry);
+        }
+        onSelectedLanguageChange?.(entry);
+        onSelection?.(entry);
       }
-      onSelectedLanguageChange?.(code);
-      onSelection?.(code);
     },
-    [isControlled, onSelectedLanguageChange, onSelection]
+    [isControlled, displayLanguages, onSelectedLanguageChange, onSelection]
   );
 
   const close = useCallback(() => {
@@ -111,6 +139,10 @@ export const LanguageSelectorHandler: React.FC<LanguageSelectorHandlerProps> = (
         onMouseEnter={handleMouseEnter}
         onClick={handleClick}
         size={displayOptions.buttonSize}
+        text={placeholderText}
+        displaySelected={displaySelected}
+        selectedLanguage={selectedEntry}
+        showFlag={flagMode !== 'none'}
       />
       {error && (
         <div className={styles.error}>

@@ -1,259 +1,281 @@
-import { jsx as r, jsxs as c, Fragment as D } from "react/jsx-runtime";
-import { useCallback as b, useEffect as M, useRef as V, useState as y, useMemo as O } from "react";
-const J = "https://lsapi.casholab.com";
-async function K(e, t, n) {
-  const s = await ie(e, {
-    flagDisplayMode: t.flagMode,
-    apiUrl: n.apiUrl,
-    flagLoadMode: n.flagLoadMode
+import { jsx as r, jsxs as c, Fragment as U } from "react/jsx-runtime";
+import { useCallback as D, useEffect as O, useRef as X, useState as k, useMemo as W, useId as fe } from "react";
+const ae = "https://lsapi.casholab.com";
+async function ie(e, n, t) {
+  const o = await pe(e, {
+    flagDisplayMode: n.flagMode,
+    apiUrl: t.apiUrl,
+    flagLoadMode: t.flagLoadMode
   });
-  return await ae(s, n.flagLoadMode);
+  return await _e(o, t.flagLoadMode);
 }
-async function ie(e, t = {}) {
-  const { flagDisplayMode: n = "none", apiUrl: s = J } = t, o = new URLSearchParams({
+async function pe(e, n = {}) {
+  const { flagDisplayMode: t = "single", apiUrl: o = ae } = n, s = new URLSearchParams({
     l: e.join(","),
-    f: n
-  }), i = await fetch(`${s}/languages?${o}`);
-  if (!i.ok) {
-    const d = await i.json().catch(() => ({ error: "Request failed" }));
-    throw new Error(d.error || `HTTP ${i.status}`);
+    f: t
+  }), a = await fetch(`${o}/languages?${s}`);
+  if (!a.ok) {
+    const d = await a.json().catch(() => ({ error: "Request failed" }));
+    throw new Error(d.error || `HTTP ${a.status}`);
   }
-  const a = await i.json();
-  if (!a.resolved || a.resolved.length === 0)
+  const i = await a.json();
+  if (!i.resolved || i.resolved.length === 0)
     throw new Error("Invalid response: no valid languages returned");
-  return a;
+  return i;
 }
-async function ae(e, t = "multi", n = J) {
+async function _e(e, n = "multi", t = ae) {
   if (e.flags && Object.keys(e.flags).length > 0)
     return e;
-  const s = ce(e);
-  if (s.length === 0)
+  const o = ve(e);
+  if (o.length === 0)
     return e;
-  let o;
-  return t === "single" ? o = await le(n) : o = await he(s, n), { ...e, flags: o };
+  let s;
+  return n === "single" ? s = await Ne(t) : s = await ge(o, t), { ...e, flags: s };
 }
-function ce(e) {
-  const t = /* @__PURE__ */ new Set();
-  for (const n of Object.values(e.data))
-    if (n.flags && n.flags.forEach((s) => t.add(s.toLowerCase())), n.scriptFlags)
-      for (const s of Object.values(n.scriptFlags))
-        s.forEach((o) => t.add(o.toLowerCase()));
-  return Array.from(t);
+function ve(e) {
+  const n = /* @__PURE__ */ new Set();
+  for (const t of Object.values(e.data))
+    if (t.flags && t.flags.forEach((o) => n.add(o.toLowerCase())), t.scriptFlags)
+      for (const o of Object.values(t.scriptFlags))
+        o.forEach((s) => n.add(s.toLowerCase()));
+  return Array.from(n);
 }
-async function le(e) {
-  const t = await fetch(`${e}/all-flags`);
-  if (!t.ok)
-    throw new Error(`Failed to fetch flags: HTTP ${t.status}`);
-  return await t.json();
+async function Ne(e) {
+  const n = await fetch(`${e}/all-flags`);
+  if (!n.ok)
+    throw new Error(`Failed to fetch flags: HTTP ${n.status}`);
+  return await n.json();
 }
-async function de(e, t) {
-  const n = await fetch(`${t}/flags/${e.toLowerCase()}`);
-  if (!n.ok) {
-    if (n.status === 404) return null;
-    throw new Error(`Failed to fetch flag: HTTP ${n.status}`);
+async function we(e, n) {
+  const t = await fetch(`${n}/flags/${e.toLowerCase()}`);
+  if (!t.ok) {
+    if (t.status === 404) return null;
+    throw new Error(`Failed to fetch flag: HTTP ${t.status}`);
   }
-  return n.text();
+  return t.text();
 }
-async function he(e, t) {
-  const n = {}, s = await Promise.all(
-    e.map(async (o) => {
-      const i = await de(o, t);
-      return { code: o.toLowerCase(), svg: i };
+async function ge(e, n) {
+  const t = {}, o = await Promise.all(
+    e.map(async (s) => {
+      const a = await we(s, n);
+      return { code: s.toLowerCase(), svg: a };
     })
   );
-  for (const { code: o, svg: i } of s)
-    i && (n[o] = i);
-  return n;
+  for (const { code: s, svg: a } of o)
+    a && (t[s] = a);
+  return t;
 }
-const me = "1.0.0";
-function pe(e) {
-  let t;
+const ue = "1.0.0";
+function Ce(e) {
+  let n;
   if (typeof e == "string")
     try {
-      t = JSON.parse(e);
-    } catch (o) {
+      n = JSON.parse(e);
+    } catch (s) {
       throw new Error(
-        "Invalid JSON format: " + (o instanceof Error ? o.message : String(o))
+        "Invalid JSON format: " + (s instanceof Error ? s.message : String(s))
       );
     }
   else
-    t = e;
-  if (typeof t != "object" || t === null)
+    n = e;
+  if (typeof n != "object" || n === null)
     throw new Error("Invalid input: expected object");
-  const n = t;
-  if ("data" in n && n.data && typeof n.data == "object") {
-    const o = B(n.data), i = n.displayOptions && typeof n.displayOptions == "object" ? n.displayOptions : null;
-    return { data: o, displayOptions: i };
+  const t = n;
+  if ("data" in t && t.data && typeof t.data == "object") {
+    const s = oe(t.data), a = t.displayOptions && typeof t.displayOptions == "object" ? t.displayOptions : null;
+    return { data: s, displayOptions: a };
   }
-  return { data: B(t), displayOptions: null };
+  return { data: oe(n), displayOptions: null };
 }
-function B(e) {
+function oe(e) {
   if (!e || typeof e != "object")
     throw new Error("Invalid language data: expected object");
-  const t = e;
-  if (!t.data || typeof t.data != "object")
+  const n = e;
+  if (!n.data || typeof n.data != "object")
     throw new Error("Invalid language data: missing 'data' field");
-  if (!Array.isArray(t.resolved) || t.resolved.length === 0)
+  if (!Array.isArray(n.resolved) || n.resolved.length === 0)
     throw new Error("Invalid language data: missing or empty 'resolved' array");
-  const n = t.data;
-  let s = !1;
-  for (const o of Object.values(n))
-    if (o && typeof o == "object") {
-      const a = o.data;
-      if (a) {
-        const d = typeof a.code == "string" && a.code.length > 0, p = typeof a.name == "string" && a.name.length > 0, v = typeof a.endonym == "string" && a.endonym.length > 0;
-        if (d && (p || v)) {
-          s = !0;
+  const t = n.data;
+  let o = !1;
+  for (const s of Object.values(t))
+    if (s && typeof s == "object") {
+      const i = s.data;
+      if (i) {
+        const d = typeof i.code == "string" && i.code.length > 0, m = typeof i.name == "string" && i.name.length > 0, p = typeof i.endonym == "string" && i.endonym.length > 0;
+        if (d && (m || p)) {
+          o = !0;
           break;
         }
       }
     }
-  if (!s)
+  if (!o)
     throw new Error(
       "Invalid language data: requires at least 1 language with code and name/endonym"
     );
   return e;
 }
-async function zt(e, t, n) {
-  const s = await K(
+async function Zt(e, n, t) {
+  const o = await ie(
     e,
-    t,
-    n
+    n,
+    t
   );
   return {
-    displayOptions: t,
-    languageData: s,
+    displayOptions: n,
+    languageData: o,
     meta: {
       generatedTimestamp: (/* @__PURE__ */ new Date()).toISOString(),
-      version: me
+      version: ue
     }
   };
 }
-function Dt(e) {
-  const t = new Blob([JSON.stringify(e, null, 2)], {
+function Pt(e) {
+  const n = new Blob([JSON.stringify(e, null, 2)], {
     type: "application/json"
-  }), n = URL.createObjectURL(t), s = document.createElement("a");
-  s.href = n, s.download = "language-data.json", s.click();
+  }), t = URL.createObjectURL(n), o = document.createElement("a");
+  o.href = t, o.download = "language-data.json", o.click();
 }
-function fe(e) {
-  const t = e.split("-"), n = { lang: t[0] };
-  for (let s = 1; s < t.length; s++) {
-    const o = t[s];
-    o.length === 4 && /^[A-Za-z]{4}$/.test(o) ? n.script = o : o.length === 2 && /^[A-Za-z]{2}$/.test(o) && (n.region = o);
+function ee(e) {
+  const n = e.split("-"), t = { lang: n[0] };
+  for (let o = 1; o < n.length; o++) {
+    const s = n[o];
+    s.length === 4 && /^[A-Za-z]{4}$/.test(s) ? t.script = s : s.length === 2 && /^[A-Za-z]{2}$/.test(s) && (t.region = s);
   }
-  return n;
+  return t;
 }
-function _e(e, t, n) {
-  var s;
-  return n === "none" || !t ? [] : e.region ? [e.region.toLowerCase()] : e.script && ((s = t.scriptFlags) != null && s[e.script]) ? t.scriptFlags[e.script] : t.flags ?? [];
+function Le(e, n, t) {
+  var o;
+  return t === "none" || !n ? [] : e.region ? [e.region.toLowerCase()] : e.script && ((o = n.scriptFlags) != null && o[e.script]) ? n.scriptFlags[e.script] : n.flags ?? [];
 }
-function X(e) {
+function ye(e) {
   return "data:image/svg+xml," + encodeURIComponent(e);
 }
-function ve(e, t) {
-  return e.resolved.map((n) => {
-    var m, w;
-    const s = fe(n), o = e.data[s.lang];
-    let i, a, d, p, v = (o == null ? void 0 : o.data.endonym) ?? "";
-    if (s.region && ((m = o == null ? void 0 : o.regionData) != null && m[s.region])) {
-      const h = o.regionData[s.region];
-      i = h.regionNameEnglish, a = h.regionNameNative;
+function Ee(e, n, t) {
+  return e.resolved.map((o) => {
+    var j, h;
+    const s = ee(o), a = e.data[s.lang];
+    let i, d, m, p, v = (a == null ? void 0 : a.data.endonym) ?? "";
+    if (s.region && ((j = a == null ? void 0 : a.regionData) != null && j[s.region])) {
+      const f = a.regionData[s.region];
+      i = f.regionNameEnglish, d = f.regionNameNative;
     }
-    if (s.script && ((w = o == null ? void 0 : o.scriptData) != null && w[s.script])) {
-      const h = o.scriptData[s.script];
-      d = h.scriptNameEnglish, p = h.scriptNameLocal, v = h.languageInScript || v;
+    if (s.script && ((h = a == null ? void 0 : a.scriptData) != null && h[s.script])) {
+      const f = a.scriptData[s.script];
+      m = f.scriptNameEnglish, p = f.scriptNameLocal, v = f.languageInScript || v;
     }
-    const g = _e(s, o, t);
+    const y = Le(s, a, n).map((f) => {
+      const $ = (t == null ? void 0 : t[f]) ?? (t == null ? void 0 : t[f.toLowerCase()]);
+      return $ ? ye($) : null;
+    }).filter((f) => f !== null);
     return {
-      code: n,
-      name: (o == null ? void 0 : o.data.name) ?? n,
+      code: o,
+      name: (a == null ? void 0 : a.data.name) ?? o,
       endonym: v,
       regionNameEnglish: i,
-      regionNameNative: a,
-      scriptNameEnglish: d,
+      regionNameNative: d,
+      scriptNameEnglish: m,
       scriptNameLocal: p,
-      flagCodes: g
+      flagSvgDataUris: y
     };
-  });
+  }).sort((o, s) => o.endonym.localeCompare(s.endonym));
 }
-function G(e, t) {
-  if (!t) return e;
-  const n = t.toLowerCase();
+function ce(e, n) {
+  if (!n) return e;
+  const t = n.toLowerCase();
   return e.filter(
-    (s) => s.name.toLowerCase().includes(n) || s.endonym.toLowerCase().includes(n) || s.code.toLowerCase().includes(n) || s.regionNameEnglish && s.regionNameEnglish.toLowerCase().includes(n) || s.regionNameNative && s.regionNameNative.toLowerCase().includes(n) || s.scriptNameEnglish && s.scriptNameEnglish.toLowerCase().includes(n) || s.scriptNameLocal && s.scriptNameLocal.toLowerCase().includes(n)
+    (o) => o.name.toLowerCase().includes(t) || o.endonym.toLowerCase().includes(t) || o.code.toLowerCase().includes(t) || o.regionNameEnglish && o.regionNameEnglish.toLowerCase().includes(t) || o.regionNameNative && o.regionNameNative.toLowerCase().includes(t) || o.scriptNameEnglish && o.scriptNameEnglish.toLowerCase().includes(t) || o.scriptNameLocal && o.scriptNameLocal.toLowerCase().includes(t)
   );
 }
-const Q = ({
+function be() {
+  var e;
+  return typeof navigator > "u" ? [] : ((e = navigator.languages) == null ? void 0 : e.slice()) ?? (navigator.language ? [navigator.language] : []);
+}
+function ke(e, n) {
+  const t = n.map((s) => s.code.toLowerCase()), o = new Map(n.map((s) => [s.code.toLowerCase(), s]));
+  for (const s of e) {
+    const a = s.toLowerCase();
+    if (o.has(a))
+      return o.get(a);
+    const d = ee(s).lang.toLowerCase();
+    if (o.has(d))
+      return o.get(d);
+    for (const m of t)
+      if (ee(m).lang.toLowerCase() === d)
+        return o.get(m);
+  }
+  return null;
+}
+const te = ({
   width: e = "24",
-  height: t = "24",
-  color: n = "currentColor"
+  height: n = "24",
+  color: t = "currentColor"
 }) => /* @__PURE__ */ r(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: e,
-    height: t,
+    height: n,
     viewBox: "0 0 400 364",
     fill: "none",
     children: /* @__PURE__ */ r(
       "path",
       {
         d: "M269.958 133.006C277.449 129.385 286.184 129.385 293.675 133.006L293.675 133.006C300.193 136.157 303.727 141.647 305.482 144.6C306.931 147.038 308.409 150.006 309.877 153.053L311.339 156.108L311.34 156.109L363.435 265.144L363.436 265.145L398.217 337.944C402.549 347.011 398.717 357.878 389.658 362.215C380.6 366.551 369.745 362.716 365.412 353.648L335.575 291.197H228.058L198.221 353.648C193.888 362.716 183.033 366.551 173.974 362.215C164.915 357.878 161.084 347.011 165.416 337.944L252.293 156.109L252.293 156.108C254.236 152.044 256.219 147.85 258.15 144.6C259.905 141.647 263.44 136.156 269.958 133.006ZM109.093 18.1996C109.093 8.14815 117.233 0 127.274 0C137.315 0 145.455 8.14815 145.455 18.1996V36.3992H236.363C246.404 36.3992 254.544 44.5479 254.544 54.5994C254.544 64.6508 246.404 72.799 236.363 72.799H205.968C196.654 116.969 179.546 157.739 155.723 193.585C160.911 196.781 166.067 199.538 171.088 201.796C180.247 205.915 184.337 216.687 180.221 225.856C176.106 235.025 165.345 239.118 156.186 234.999C148.681 231.624 141.196 227.516 133.88 222.837C104.662 257.777 68.3185 286.581 26.2765 307.495C17.2844 311.968 6.37227 308.297 1.90357 299.296C-2.56499 290.295 1.1022 279.372 10.0943 274.898C47.1711 256.454 79.1804 231.207 104.999 200.661C84.2915 181.895 66.1749 158.631 55.9818 134.482C52.0737 125.223 56.4038 114.546 65.6533 110.634C74.9029 106.722 85.5694 111.056 89.4776 120.315C96.8424 137.763 110.426 155.897 126.838 171.313C146.005 141.934 160.241 108.778 168.712 72.799H18.1854C8.1441 72.799 0.00420549 64.6508 0.00410879 54.5994C0.00410879 44.5479 8.14404 36.3992 18.1854 36.3992H109.093V18.1996ZM245.449 254.797H318.183L281.816 178.68L245.449 254.797Z",
-        fill: n
+        fill: t
       }
     )
   }
-), we = ({
+), $e = ({
   width: e = "24",
-  height: t = "24",
-  color: n = "currentColor"
+  height: n = "24",
+  color: t = "currentColor"
 }) => /* @__PURE__ */ r(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: e,
-    height: t,
+    height: n,
     viewBox: "0 0 24 24",
     fill: "none",
-    stroke: n,
+    stroke: t,
     strokeWidth: "2",
     strokeLinecap: "round",
     strokeLinejoin: "round",
     children: /* @__PURE__ */ r("polyline", { points: "6 9 12 15 18 9" })
   }
-), P = ({
+), se = ({
   width: e = "24",
-  height: t = "24",
-  color: n = "currentColor"
+  height: n = "24",
+  color: t = "currentColor"
 }) => /* @__PURE__ */ r(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: e,
-    height: t,
+    height: n,
     viewBox: "0 0 360 360",
     fill: "none",
     children: /* @__PURE__ */ r(
       "path",
       {
         d: "M288 162C288 92.4121 231.588 35.9998 162 35.9997C92.4121 35.9997 35.9997 92.4121 35.9997 162C35.9998 231.588 92.4121 288 162 288C231.588 288 288 231.588 288 162ZM324 162C324 200.128 310.827 235.18 288.786 262.852L354.774 329.318C361.778 336.372 361.737 347.77 354.682 354.774C347.627 361.778 336.23 361.737 329.226 354.682L263.382 288.362C235.628 310.658 200.372 324 162 324C72.5299 324 9.79709e-05 251.471 0 162C0 72.5298 72.5298 0 162 0C251.471 9.79946e-05 324 72.5299 324 162Z",
-        fill: n
+        fill: t
       }
     )
   }
-), Ne = ({
+), xe = ({
   width: e = "24",
-  height: t = "24",
-  color: n = "currentColor"
+  height: n = "24",
+  color: t = "currentColor"
 }) => /* @__PURE__ */ c(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: e,
-    height: t,
+    height: n,
     viewBox: "0 0 24 24",
     fill: "none",
-    stroke: n,
+    stroke: t,
     strokeWidth: "2",
     strokeLinecap: "round",
     strokeLinejoin: "round",
@@ -262,600 +284,584 @@ const Q = ({
       /* @__PURE__ */ r("line", { x1: "6", y1: "6", x2: "18", y2: "18" })
     ]
   }
-), ue = "_close_10rmb_1", ge = "_outer_10rmb_22", Le = "_overlay_10rmb_32", Ce = "_container_10rmb_44", ye = "_body_10rmb_59", S = {
-  close: ue,
-  outer: ge,
-  overlay: Le,
-  container: Ce,
-  body: ye
-}, Ee = ({
+), De = "_close_10rmb_1", je = "_outer_10rmb_22", Fe = "_overlay_10rmb_32", Se = "_container_10rmb_44", ze = "_body_10rmb_59", B = {
+  close: De,
+  outer: je,
+  overlay: Fe,
+  container: Se,
+  body: ze
+}, Me = ({
   close: e,
-  xbutton: t = !1,
-  bgCloses: n = !0,
-  children: s
+  xbutton: n = !1,
+  bgCloses: t = !0,
+  children: o
 }) => {
-  const o = b(
-    (a) => {
-      n && a.target === a.currentTarget && e();
+  const s = D(
+    (i) => {
+      t && i.target === i.currentTarget && e();
     },
-    [n, e]
-  ), i = b(
-    (a) => {
-      a.key === "Escape" && n && e();
+    [t, e]
+  ), a = D(
+    (i) => {
+      i.key === "Escape" && t && e();
     },
-    [n, e]
+    [t, e]
   );
-  return M(() => (window.addEventListener("keydown", i), () => window.removeEventListener("keydown", i)), [i]), /* @__PURE__ */ c("div", { className: S.outer, children: [
+  return O(() => (window.addEventListener("keydown", a), () => window.removeEventListener("keydown", a)), [a]), /* @__PURE__ */ c("div", { className: B.outer, children: [
     /* @__PURE__ */ r(
       "div",
       {
-        className: S.overlay,
-        onClick: o,
+        className: B.overlay,
+        onClick: s,
         "aria-label": "Close modal",
         role: "button",
         tabIndex: 0
       }
     ),
-    /* @__PURE__ */ r("div", { className: S.container, children: /* @__PURE__ */ c("div", { className: S.body, children: [
-      t && /* @__PURE__ */ r(
+    /* @__PURE__ */ r("div", { className: B.container, children: /* @__PURE__ */ c("div", { className: B.body, children: [
+      n && /* @__PURE__ */ r(
         "button",
         {
-          className: S.close,
+          className: B.close,
           onClick: e,
           "aria-label": "close",
-          children: /* @__PURE__ */ r(Ne, {})
+          children: /* @__PURE__ */ r(xe, {})
         }
       ),
-      s
+      o
     ] }) })
   ] });
-}, $e = "_search_18os4_1", be = "_searchCompact_18os4_35", Z = {
-  search: $e,
-  searchCompact: be
-}, Y = ({
+}, Ie = "_search_18os4_1", Re = "_searchCompact_18os4_35", re = {
+  search: Ie,
+  searchCompact: Re
+}, le = ({
   value: e,
-  onChange: t,
-  placeholder: n = "Search languages...",
-  variant: s = "default",
-  autoFocus: o = !1,
-  onKeyDown: i
+  onChange: n,
+  placeholder: t = "Search languages...",
+  variant: o = "default",
+  autoFocus: s = !1,
+  onKeyDown: a
 }) => {
-  const a = V(null);
-  return M(() => {
-    o && a.current && a.current.focus();
-  }, [o]), s === "default" ? /* @__PURE__ */ c("label", { htmlFor: "ls-search", className: Z.search, children: [
-    /* @__PURE__ */ r(P, { width: "18", height: "18" }),
+  const i = X(null);
+  return O(() => {
+    s && i.current && i.current.focus();
+  }, [s]), o === "default" ? /* @__PURE__ */ c("label", { htmlFor: "ls-search", className: re.search, children: [
+    /* @__PURE__ */ r(se, { width: "18", height: "18" }),
     /* @__PURE__ */ r(
       "input",
       {
-        ref: a,
+        ref: i,
         id: "ls-search",
         type: "text",
-        placeholder: n,
+        placeholder: t,
         value: e,
-        onChange: (d) => t(d.target.value),
-        onKeyDown: i
+        onChange: (d) => n(d.target.value),
+        onKeyDown: a
       }
     )
-  ] }) : /* @__PURE__ */ c("div", { className: Z.searchCompact, children: [
-    /* @__PURE__ */ r(P, { width: "16", height: "16" }),
+  ] }) : /* @__PURE__ */ c("div", { className: re.searchCompact, children: [
+    /* @__PURE__ */ r(se, { width: "16", height: "16" }),
     /* @__PURE__ */ r(
       "input",
       {
-        ref: a,
+        ref: i,
         type: "text",
-        placeholder: n,
+        placeholder: t,
         value: e,
-        onChange: (d) => t(d.target.value),
-        onKeyDown: i
+        onChange: (d) => n(d.target.value),
+        onKeyDown: a
       }
     )
   ] });
-}, ke = "_flags_jz6q8_1", je = "_flag_jz6q8_1", Fe = "_sm_jz6q8_13", xe = "_single_jz6q8_13", ze = "_md_jz6q8_25", De = "_row_jz6q8_39", Ie = "_grid_jz6q8_50", Se = "_lg_jz6q8_63", q = {
-  flags: ke,
-  flag: je,
-  sm: Fe,
-  single: xe,
-  md: ze,
-  row: De,
-  grid: Ie,
-  lg: Se
-}, ee = ({
-  flagCodes: e,
-  flags: t,
+}, Ue = "_flags_jz6q8_1", Te = "_flag_jz6q8_1", Oe = "_sm_jz6q8_13", qe = "_single_jz6q8_13", Ae = "_md_jz6q8_25", He = "_row_jz6q8_39", Be = "_grid_jz6q8_50", We = "_lg_jz6q8_63", J = {
+  flags: Ue,
+  flag: Te,
+  sm: Oe,
+  single: qe,
+  md: Ae,
+  row: He,
+  grid: Be,
+  lg: We
+}, de = ({
+  flagSvgDataUris: e,
   size: n = "md"
 }) => {
-  if (e.length === 0 || !t) return null;
-  const s = e.length > 2 ? "grid" : e.length === 2 ? "row" : "single";
-  return /* @__PURE__ */ r("div", { className: `${q.flags} ${q[s]} ${q[n]}`, children: e.map((o) => {
-    const i = t[o] ?? t[o.toLowerCase()];
-    return i ? /* @__PURE__ */ r(
-      "img",
-      {
-        className: q.flag,
-        src: X(i),
-        alt: "",
-        title: o
-      },
-      o
-    ) : null;
-  }) });
-}, Me = "_option_1uwwe_1", Oe = "_selected_1uwwe_21", Te = "_content_1uwwe_26", He = "_native_1uwwe_30", Re = "_english_1uwwe_31", qe = "_meta_1uwwe_46", Ae = "_metaNative_1uwwe_53", Ue = "_metaEnglish_1uwwe_64", C = {
-  option: Me,
-  selected: Oe,
-  content: Te,
-  native: He,
-  english: Re,
-  meta: qe,
-  metaNative: Ae,
-  metaEnglish: Ue
-}, Be = ({
+  if (e.length === 0) return null;
+  const t = e.length > 2 ? "grid" : e.length === 2 ? "row" : "single";
+  return /* @__PURE__ */ r("div", { className: `${J.flags} ${J[t]} ${J[n]}`, children: e.map((o, s) => /* @__PURE__ */ r(
+    "img",
+    {
+      className: J.flag,
+      src: o,
+      alt: ""
+    },
+    s
+  )) });
+}, Ze = "_option_1b8fs_1", Pe = "_selected_1b8fs_28", Ve = "_content_1b8fs_33", Je = "_native_1b8fs_37", Ke = "_english_1b8fs_38", Xe = "_metaContainer_1b8fs_53", Ye = "_meta_1b8fs_53", Ge = "_metaNative_1b8fs_66", Qe = "_metaEnglish_1b8fs_77", g = {
+  option: Ze,
+  selected: Pe,
+  content: Ve,
+  native: Je,
+  english: Ke,
+  metaContainer: Xe,
+  meta: Ye,
+  metaNative: Ge,
+  metaEnglish: Qe
+}, et = ({
   language: e,
-  flags: t,
   showFlags: n = !1,
-  showEnglishName: s = !0,
+  showEnglishName: t = !0,
   selected: o = !1,
-  onClick: i
+  onClick: s
 }) => {
   const a = e.regionNameNative || e.regionNameEnglish || e.scriptNameLocal || e.scriptNameEnglish;
   return /* @__PURE__ */ c(
     "button",
     {
-      className: `${C.option} ${o ? C.selected : ""}`,
-      onClick: i,
+      className: `${g.option} ${o ? g.selected : ""}`,
+      onClick: s,
       children: [
-        n && e.flagCodes.length > 0 && t && /* @__PURE__ */ r(ee, { flagCodes: e.flagCodes, flags: t, size: "md" }),
-        /* @__PURE__ */ c("div", { className: C.content, children: [
-          /* @__PURE__ */ r("div", { className: C.native, children: e.endonym || e.name }),
-          s && /* @__PURE__ */ r("div", { className: C.english, children: /* @__PURE__ */ r("span", { className: C.name, children: e.name }) })
+        n && e.flagSvgDataUris.length > 0 && /* @__PURE__ */ r(de, { flagSvgDataUris: e.flagSvgDataUris, size: "md" }),
+        /* @__PURE__ */ c("div", { className: g.content, children: [
+          /* @__PURE__ */ r("div", { className: g.native, children: e.endonym || e.name }),
+          t && /* @__PURE__ */ r("div", { className: g.english, children: /* @__PURE__ */ r("span", { className: g.name, children: e.name }) })
         ] }),
-        a && /* @__PURE__ */ c(D, { children: [
-          (e.regionNameNative || e.regionNameEnglish) && /* @__PURE__ */ c("div", { className: C.meta, children: [
-            /* @__PURE__ */ r("div", { className: C.metaNative, children: e.regionNameNative || "" }),
-            s && e.regionNameEnglish && (!e.regionNameNative || e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase()) && /* @__PURE__ */ r("div", { className: C.metaEnglish, children: e.regionNameEnglish })
+        a && /* @__PURE__ */ c("div", { className: g.metaContainer, children: [
+          (e.regionNameNative || e.regionNameEnglish) && /* @__PURE__ */ c("div", { className: g.meta, children: [
+            /* @__PURE__ */ r("div", { className: g.metaNative, children: e.regionNameNative || "" }),
+            t && e.regionNameEnglish && (!e.regionNameNative || e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase()) && /* @__PURE__ */ r("div", { className: g.metaEnglish, children: e.regionNameEnglish })
           ] }),
-          (e.scriptNameLocal || e.scriptNameEnglish) && /* @__PURE__ */ c("div", { className: C.meta, children: [
-            /* @__PURE__ */ r("div", { className: C.metaNative, children: e.scriptNameLocal || "" }),
-            s && e.scriptNameEnglish && (!e.scriptNameLocal || e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase()) && /* @__PURE__ */ r("div", { className: C.metaEnglish, children: e.scriptNameEnglish })
+          (e.scriptNameLocal || e.scriptNameEnglish) && /* @__PURE__ */ c("div", { className: g.meta, children: [
+            /* @__PURE__ */ r("div", { className: g.metaNative, children: e.scriptNameLocal || "" }),
+            t && e.scriptNameEnglish && (!e.scriptNameLocal || e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase()) && /* @__PURE__ */ r("div", { className: g.metaEnglish, children: e.scriptNameEnglish })
           ] })
         ] })
       ]
     }
   );
-}, Pe = "_selected_vh9v3_1", Ze = "_native_vh9v3_11", We = "_english_vh9v3_17", Ve = "_scriptLocal_vh9v3_22", Je = "_regionLocal_vh9v3_23", z = {
-  selected: Pe,
-  native: Ze,
-  english: We,
-  scriptLocal: Ve,
-  regionLocal: Je
-}, Ke = ({
+}, tt = "_selected_vh9v3_1", nt = "_native_vh9v3_11", ot = "_english_vh9v3_17", st = "_scriptLocal_vh9v3_22", rt = "_regionLocal_vh9v3_23", R = {
+  selected: tt,
+  native: nt,
+  english: ot,
+  scriptLocal: st,
+  regionLocal: rt
+}, at = ({
   language: e,
-  flags: t,
   showFlags: n = !1,
-  showEnglishName: s = !0
-}) => /* @__PURE__ */ c("div", { className: z.selected, children: [
-  /* @__PURE__ */ c("div", { className: z.native, children: [
+  showEnglishName: t = !0
+}) => /* @__PURE__ */ c("div", { className: R.selected, children: [
+  /* @__PURE__ */ c("div", { className: R.native, children: [
     e.endonym || e.name,
-    e.scriptNameLocal && /* @__PURE__ */ c("span", { className: z.scriptLocal, children: [
+    e.scriptNameLocal && /* @__PURE__ */ c("span", { className: R.scriptLocal, children: [
       "(",
       e.scriptNameLocal,
       ")"
     ] }),
-    e.regionNameNative && /* @__PURE__ */ c("span", { className: z.regionLocal, children: [
+    e.regionNameNative && /* @__PURE__ */ c("span", { className: R.regionLocal, children: [
       "(",
       e.regionNameNative,
       ")"
     ] })
   ] }),
-  s && /* @__PURE__ */ c("div", { className: z.english, children: [
-    /* @__PURE__ */ r("span", { className: z.name, children: e.name }),
-    (e.regionNameEnglish || e.scriptNameEnglish) && /* @__PURE__ */ c("span", { className: z.variant, children: [
-      e.scriptNameEnglish && (!e.scriptNameLocal || e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase()) && /* @__PURE__ */ c(D, { children: [
+  t && /* @__PURE__ */ c("div", { className: R.english, children: [
+    /* @__PURE__ */ r("span", { className: R.name, children: e.name }),
+    (e.regionNameEnglish || e.scriptNameEnglish) && /* @__PURE__ */ c("span", { className: R.variant, children: [
+      e.scriptNameEnglish && (!e.scriptNameLocal || e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase()) && /* @__PURE__ */ c(U, { children: [
         "(",
         e.scriptNameEnglish,
         ")"
       ] }),
-      e.regionNameEnglish && (!e.regionNameNative || e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase()) && /* @__PURE__ */ c(D, { children: [
+      e.regionNameEnglish && (!e.regionNameNative || e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase()) && /* @__PURE__ */ c(U, { children: [
         " ",
         e.regionNameEnglish
       ] })
     ] })
   ] }),
-  n && e.flagCodes.length > 0 && t && /* @__PURE__ */ r(ee, { flagCodes: e.flagCodes, flags: t, size: "lg" })
-] }), Xe = "_divider_ydyen_1", Ge = "_container_ydyen_11", Qe = "_content_ydyen_16", Ye = "_loadingOverlay_ydyen_20", et = "_spinner_ydyen_36", tt = "_error_ydyen_49", nt = "_header_ydyen_58", st = "_list_ydyen_68", ot = "_placeholder_ydyen_76", $ = {
-  divider: Xe,
-  container: Ge,
-  content: Qe,
-  loadingOverlay: Ye,
-  spinner: et,
-  error: tt,
-  header: nt,
-  list: st,
-  placeholder: ot
-}, rt = ({
+  n && e.flagSvgDataUris.length > 0 && /* @__PURE__ */ r(de, { flagSvgDataUris: e.flagSvgDataUris, size: "lg" })
+] }), it = "_divider_koho4_1", ct = "_container_koho4_11", lt = "_content_koho4_16", dt = "_loadingOverlay_koho4_20", mt = "_spinner_koho4_36", ht = "_header_koho4_58", ft = "_list_koho4_68", pt = "_placeholder_koho4_76", z = {
+  divider: it,
+  container: ct,
+  content: lt,
+  loadingOverlay: dt,
+  spinner: mt,
+  header: ht,
+  list: ft,
+  placeholder: pt
+}, _t = ({
   displayLanguages: e = [],
-  flags: t,
   isLoading: n = !1,
-  error: s = null,
-  skeletonCount: o = 0,
-  selectedEntry: i = null,
-  isOpen: a,
-  showEnglishName: d = !0,
-  showFlags: p = !1,
-  selectLanguage: v,
-  close: g
+  skeletonCount: t = 0,
+  selectedEntry: o = null,
+  isOpen: s,
+  showEnglishName: a = !0,
+  showFlags: i = !1,
+  selectLanguage: d,
+  close: m
 }) => {
-  const [m, w] = y(""), h = () => {
-    g(), w("");
-  }, k = (f) => {
-    v(f), h();
-  }, N = O(
-    () => G(e, m),
-    [e, m]
+  const [p, v] = k(""), M = () => {
+    m(), v("");
+  }, y = (h) => {
+    d(h), M();
+  }, j = W(
+    () => ce(e, p),
+    [e, p]
   );
-  return a ? /* @__PURE__ */ r(Ee, { close: h, xbutton: !0, bgCloses: !0, children: /* @__PURE__ */ c("div", { className: $.container, children: [
-    /* @__PURE__ */ c("header", { className: $.header, children: [
-      /* @__PURE__ */ r(Q, { width: "20", height: "20" }),
+  return s ? /* @__PURE__ */ r(Me, { close: M, xbutton: !0, bgCloses: !0, children: /* @__PURE__ */ c("div", { className: z.container, children: [
+    /* @__PURE__ */ c("header", { className: z.header, children: [
+      /* @__PURE__ */ r(te, { width: "20", height: "20" }),
       /* @__PURE__ */ r("span", { children: "Select a Language" })
     ] }),
-    s ? /* @__PURE__ */ c("div", { className: $.error, children: [
-      /* @__PURE__ */ r("p", { children: "Failed to load languages" }),
-      /* @__PURE__ */ r("p", { className: $.errorDetails, children: s.message })
-    ] }) : /* @__PURE__ */ c("div", { className: $.content, children: [
-      n && /* @__PURE__ */ r("div", { className: $.loadingOverlay, children: /* @__PURE__ */ r("div", { className: $.spinner }) }),
-      i && /* @__PURE__ */ c(D, { children: [
+    /* @__PURE__ */ c("div", { className: z.content, children: [
+      n && /* @__PURE__ */ r("div", { className: z.loadingOverlay, children: /* @__PURE__ */ r("div", { className: z.spinner }) }),
+      o && /* @__PURE__ */ c(U, { children: [
         /* @__PURE__ */ r(
-          Ke,
+          at,
           {
-            language: i,
-            flags: t,
-            showFlags: p,
-            showEnglishName: d && !!i.endonym && i.endonym !== i.name
+            language: o,
+            showFlags: i,
+            showEnglishName: a && !!o.endonym && o.endonym !== o.name
           }
         ),
-        /* @__PURE__ */ r("hr", { className: $.divider })
+        /* @__PURE__ */ r("hr", { className: z.divider })
       ] }),
-      /* @__PURE__ */ r(Y, { value: m, onChange: w }),
-      /* @__PURE__ */ r("div", { className: $.list, children: e.length > 0 ? N.map((f) => /* @__PURE__ */ r(
-        Be,
+      /* @__PURE__ */ r(le, { value: p, onChange: v }),
+      /* @__PURE__ */ r("div", { className: z.list, children: e.length > 0 ? j.map((h) => /* @__PURE__ */ r(
+        et,
         {
-          language: f,
-          flags: t,
-          showFlags: p,
-          showEnglishName: d && !!f.endonym && f.endonym !== f.name,
-          selected: (i == null ? void 0 : i.code) === f.code,
-          onClick: () => k(f.code)
+          language: h,
+          showFlags: i,
+          showEnglishName: a && !!h.endonym && h.endonym !== h.name,
+          selected: (o == null ? void 0 : o.code) === h.code,
+          onClick: () => y(h.code)
         },
-        f.code
-      )) : Array.from({ length: o }).map((f, _) => /* @__PURE__ */ r("div", { className: $.placeholder }, _)) })
+        h.code
+      )) : Array.from({ length: t }).map((h, f) => /* @__PURE__ */ r("div", { className: z.placeholder }, f)) })
     ] })
   ] }) }) : null;
-}, it = "_variantContainer_1cgzk_1", at = "_option_1cgzk_8", ct = "_selected_1cgzk_25", lt = "_flag_1cgzk_29", dt = "_text_1cgzk_37", ht = "_native_1cgzk_46", mt = "_english_1cgzk_55", pt = "_variant_1cgzk_1", j = {
-  variantContainer: it,
-  option: at,
-  selected: ct,
-  flag: lt,
-  text: dt,
-  native: ht,
-  english: mt,
-  variant: pt
-}, ft = ({
+}, vt = "_variantContainer_1cgzk_1", Nt = "_option_1cgzk_8", wt = "_selected_1cgzk_25", gt = "_flag_1cgzk_29", ut = "_text_1cgzk_37", Ct = "_native_1cgzk_46", Lt = "_english_1cgzk_55", yt = "_variant_1cgzk_1", x = {
+  variantContainer: vt,
+  option: Nt,
+  selected: wt,
+  flag: gt,
+  text: ut,
+  native: Ct,
+  english: Lt,
+  variant: yt
+}, Et = ({
   language: e,
-  flags: t,
   showFlags: n = !1,
-  showEnglishName: s = !0,
+  showEnglishName: t = !0,
   selected: o = !1,
-  onClick: i
-}) => {
-  const a = n && e.flagCodes.length > 0 && t ? t[e.flagCodes[0]] : null;
-  return /* @__PURE__ */ c(
-    "button",
-    {
-      className: `${j.option} ${o ? j.selected : ""}`,
-      onClick: i,
-      type: "button",
-      children: [
-        a && /* @__PURE__ */ r("img", { className: j.flag, src: X(a), alt: "" }),
-        /* @__PURE__ */ c("div", { className: j.text, children: [
-          /* @__PURE__ */ r("span", { className: j.native, children: e.endonym || e.name }),
-          s && e.endonym && e.endonym.toLowerCase() !== e.name.toLowerCase() && /* @__PURE__ */ r("span", { className: j.english, children: e.name })
-        ] }),
-        /* @__PURE__ */ c("div", { className: j.variantContainer, children: [
-          (e.scriptNameLocal || e.scriptNameEnglish) && /* @__PURE__ */ c("span", { className: j.variant, children: [
-            e.scriptNameLocal,
-            e.scriptNameLocal && e.scriptNameEnglish && e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase() && " | ",
-            e.scriptNameEnglish && (!e.scriptNameLocal || e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase()) && e.scriptNameEnglish
-          ] }),
-          (e.regionNameNative || e.regionNameEnglish) && /* @__PURE__ */ c("span", { className: j.variant, children: [
-            e.regionNameNative,
-            e.regionNameNative && e.regionNameEnglish && e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase() && " | ",
-            e.regionNameEnglish && (!e.regionNameNative || e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase()) && e.regionNameEnglish
-          ] })
-        ] })
-      ]
-    }
-  );
-}, _t = "_dropdown_vi1h5_1", vt = "_upward_vi1h5_18", wt = "_right_vi1h5_25", Nt = "_content_vi1h5_30", ut = "_loadingOverlay_vi1h5_38", gt = "_list_vi1h5_54", Lt = "_empty_vi1h5_61", Ct = "_spinner_vi1h5_68", yt = "_error_vi1h5_81", Et = "_placeholder_vi1h5_105", E = {
-  dropdown: _t,
-  upward: vt,
-  right: wt,
-  content: Nt,
-  loadingOverlay: ut,
-  list: gt,
-  empty: Lt,
-  spinner: Ct,
-  error: yt,
-  placeholder: Et
-}, $t = ({
-  displayLanguages: e = [],
-  flags: t,
-  isLoading: n = !1,
-  error: s = null,
-  skeletonCount: o = 0,
-  selectedEntry: i = null,
-  isOpen: a,
-  showEnglishName: d = !0,
-  showFlags: p = !1,
-  selectLanguage: v,
-  close: g
-}) => {
-  const [m, w] = y(""), [h, k] = y(!1), [N, f] = y(!1), _ = V(null), F = b(() => {
-    g(), w("");
-  }, [g]), T = (l) => {
-    v(l), F();
-  }, u = b(
-    (l) => {
-      l.key === "Escape" && F();
-    },
-    [F]
-  );
-  M(() => {
-    if (!a) return;
-    const l = (x) => u(x);
-    return window.addEventListener("keydown", l), () => window.removeEventListener("keydown", l);
-  }, [a, u]), M(() => {
-    if (!a || !_.current) return;
-    const l = _.current.getBoundingClientRect(), x = window.innerHeight, H = window.innerWidth, R = x - l.top, L = l.height;
-    k(R < L && l.top > L), l.right > H && f(!0);
-    const A = (re) => {
-      var U;
-      (U = _.current) != null && U.contains(re.target) || F();
-    }, oe = setTimeout(() => {
-      window.addEventListener("click", A);
-    }, 0);
-    return () => {
-      clearTimeout(oe), window.removeEventListener("click", A);
-    };
-  }, [a, F]);
-  const I = O(
-    () => G(e, m),
-    [e, m]
-  );
-  return a ? /* @__PURE__ */ r(
-    "div",
-    {
-      ref: _,
-      className: `${E.dropdown} ${h ? E.upward : ""} ${N ? E.right : ""}`,
-      children: s ? /* @__PURE__ */ c("div", { className: E.error, children: [
-        /* @__PURE__ */ r("p", { children: "Failed to load" }),
-        /* @__PURE__ */ r("p", { className: E.errorDetails, children: s.message })
-      ] }) : /* @__PURE__ */ c("div", { className: E.content, children: [
-        n && /* @__PURE__ */ r("div", { className: E.loadingOverlay, children: /* @__PURE__ */ r("div", { className: E.spinner }) }),
-        /* @__PURE__ */ r(
-          Y,
-          {
-            value: m,
-            onChange: w,
-            variant: "compact",
-            autoFocus: !0,
-            onKeyDown: u
-          }
-        ),
-        /* @__PURE__ */ r("div", { className: E.list, children: e.length > 0 ? /* @__PURE__ */ c(D, { children: [
-          I.length === 0 && /* @__PURE__ */ r("div", { className: E.empty, children: "No languages found" }),
-          I.map((l) => /* @__PURE__ */ r(
-            ft,
-            {
-              language: l,
-              flags: t,
-              showFlags: p,
-              showEnglishName: d && !!l.endonym && l.endonym !== l.name,
-              selected: (i == null ? void 0 : i.code) === l.code,
-              onClick: () => T(l.code)
-            },
-            l.code
-          ))
-        ] }) : Array.from({ length: o }).map((l, x) => /* @__PURE__ */ r("div", { className: E.placeholder }, x)) })
-      ] })
-    }
-  ) : null;
-}, te = ({
-  staticData: e,
-  languages: t = [],
-  displayOptions: n = {},
-  loadOptions: s = {},
-  selectedLanguage: o,
-  onSelectedLanguageChange: i,
-  isOpen: a,
-  onOpenChange: d,
-  onSelection: p,
-  preload: v = !1
-}) => {
-  const g = n.showEnglishName ?? !0, m = n.flagMode ?? "none", w = n.isModal ?? !0, [h, k] = y(null), [N, f] = y(null), [_, F] = y(!1), T = b(async () => {
-    if (!(_ || h || e)) {
-      if (!t || t.length === 0) {
-        f(new Error("No languages provided"));
-        return;
-      }
-      F(!0);
-      try {
-        const L = await K(t, n, s);
-        k(L), f(null);
-      } catch (L) {
-        f(L instanceof Error ? L : new Error(String(L)));
-      } finally {
-        F(!1);
-      }
-    }
-  }, [_, h, e, t, n, s]);
-  M(() => {
-    (a || v) && !e && !h && !_ && T();
-  }, [a, v, e, h, _, T]);
-  const u = e ?? h, I = _ || !u && !N, l = O(() => u ? ve(u, m) : [], [u, m]), x = O(() => o ? l.find((L) => L.code === o) ?? null : null, [o, l]), H = b(
-    (L) => {
-      i(L), p == null || p(L);
-    },
-    [i, p]
-  ), R = b(() => {
-    d(!1);
-  }, [d]);
-  return w ? /* @__PURE__ */ r(
-    rt,
-    {
-      displayLanguages: l,
-      flags: u == null ? void 0 : u.flags,
-      isLoading: I,
-      error: N,
-      skeletonCount: t.length,
-      selectedEntry: x,
-      isOpen: a,
-      showEnglishName: g,
-      showFlags: m !== "none",
-      selectLanguage: H,
-      close: R
-    }
-  ) : /* @__PURE__ */ r(
-    $t,
-    {
-      displayLanguages: l,
-      flags: u == null ? void 0 : u.flags,
-      isLoading: I,
-      error: N,
-      skeletonCount: t.length,
-      selectedEntry: x,
-      isOpen: a,
-      showEnglishName: g,
-      showFlags: m !== "none",
-      selectLanguage: H,
-      close: R
-    }
-  );
-}, bt = "_btn_1cc9a_1", kt = "_sm_1cc9a_27", W = {
-  btn: bt,
-  sm: kt
-}, ne = ({
-  text: e = "Localize",
-  size: t = "lg",
-  onClick: n,
-  onMouseEnter: s
+  onClick: s
 }) => /* @__PURE__ */ c(
   "button",
   {
-    className: `${W.btn} ${t === "sm" ? W.sm : ""}`,
-    onClick: n,
-    onMouseEnter: s,
+    className: `${x.option} ${o ? x.selected : ""}`,
+    onClick: s,
+    type: "button",
     children: [
-      /* @__PURE__ */ r(Q, { width: "18", height: "18" }),
-      t === "lg" && /* @__PURE__ */ c(D, { children: [
-        /* @__PURE__ */ r("span", { children: e }),
-        /* @__PURE__ */ r(we, { width: "16", height: "16" })
+      n && e.flagSvgDataUris.length > 0 && /* @__PURE__ */ r("img", { className: x.flag, src: e.flagSvgDataUris[0], alt: "" }),
+      /* @__PURE__ */ c("div", { className: x.text, children: [
+        /* @__PURE__ */ r("span", { className: x.native, children: e.endonym || e.name }),
+        t && e.endonym && e.endonym.toLowerCase() !== e.name.toLowerCase() && /* @__PURE__ */ r("span", { className: x.english, children: e.name })
+      ] }),
+      /* @__PURE__ */ c("div", { className: x.variantContainer, children: [
+        (e.scriptNameLocal || e.scriptNameEnglish) && /* @__PURE__ */ c("span", { className: x.variant, children: [
+          e.scriptNameLocal,
+          e.scriptNameLocal && e.scriptNameEnglish && e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase() && " | ",
+          e.scriptNameEnglish && (!e.scriptNameLocal || e.scriptNameLocal.toLowerCase() !== e.scriptNameEnglish.toLowerCase()) && e.scriptNameEnglish
+        ] }),
+        (e.regionNameNative || e.regionNameEnglish) && /* @__PURE__ */ c("span", { className: x.variant, children: [
+          e.regionNameNative,
+          e.regionNameNative && e.regionNameEnglish && e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase() && " | ",
+          e.regionNameEnglish && (!e.regionNameNative || e.regionNameNative.toLowerCase() !== e.regionNameEnglish.toLowerCase()) && e.regionNameEnglish
+        ] })
       ] })
     ]
   }
-), jt = "_wrapper_1w9b0_1", se = {
-  wrapper: jt
+), bt = "_pixel_16e0b_1", kt = "_dropdown_16e0b_10", $t = "_upward_16e0b_27", xt = "_right_16e0b_34", Dt = "_content_16e0b_39", jt = "_loadingOverlay_16e0b_47", Ft = "_list_16e0b_63", St = "_empty_16e0b_70", zt = "_spinner_16e0b_77", Mt = "_placeholder_16e0b_114", b = {
+  pixel: bt,
+  dropdown: kt,
+  upward: $t,
+  right: xt,
+  content: Dt,
+  loadingOverlay: jt,
+  list: Ft,
+  empty: St,
+  spinner: zt,
+  placeholder: Mt
 }, It = ({
-  languages: e,
-  displayOptions: t = {},
-  loadOptions: n = {},
+  displayLanguages: e = [],
+  isLoading: n = !1,
+  skeletonCount: t = 0,
+  selectedEntry: o = null,
+  isOpen: s,
+  showEnglishName: a = !0,
+  showFlags: i = !1,
+  selectLanguage: d,
+  close: m
+}) => {
+  const [p, v] = k(""), [M, y] = k(!1), [j, h] = k(!1), [f, $] = k(0), N = X(null), q = X(null), Z = fe(), E = D(() => {
+    m(), v("");
+  }, [m]), L = (l) => {
+    d(l), E();
+  }, T = D(
+    (l) => {
+      l.key === "Escape" && E();
+    },
+    [E]
+  );
+  O(() => {
+    if (!s) return;
+    const l = (w) => T(w);
+    return window.addEventListener("keydown", l), () => window.removeEventListener("keydown", l);
+  }, [s, T]), O(() => {
+    if (!s || !N.current || !q.current) return;
+    const l = q.current.getBoundingClientRect(), w = N.current.getBoundingClientRect(), F = document.documentElement.clientHeight, Y = document.documentElement.clientWidth, P = w.height, S = w.width, u = l.top, I = l.left, V = F - u;
+    y(V < P && u > P);
+    const H = Y - I, _ = I;
+    H < S && _ < S ? (h(!1), $(-I)) : H < S ? (h(!0), $(0)) : (h(!1), $(0));
+    const C = (he) => {
+      var ne;
+      (ne = N.current) != null && ne.contains(he.target) || E();
+    }, G = setTimeout(() => {
+      window.addEventListener("click", C);
+    }, 0);
+    return () => {
+      clearTimeout(G), window.removeEventListener("click", C);
+    };
+  }, [s, E]);
+  const A = W(
+    () => ce(e, p),
+    [e, p]
+  );
+  return /* @__PURE__ */ c(U, { children: [
+    /* @__PURE__ */ r("span", { ref: q, className: b.pixel }),
+    s && /* @__PURE__ */ r(
+      "div",
+      {
+        ref: N,
+        className: `${b.dropdown} ${M ? b.upward : ""} ${j ? b.right : ""}`,
+        style: f ? { transform: `translateX(${f}px)` } : void 0,
+        children: /* @__PURE__ */ c("div", { className: b.content, children: [
+          n && /* @__PURE__ */ r("div", { className: b.loadingOverlay, children: /* @__PURE__ */ r("div", { className: b.spinner }) }),
+          /* @__PURE__ */ r(
+            le,
+            {
+              value: p,
+              onChange: v,
+              variant: "compact",
+              autoFocus: !0,
+              onKeyDown: T
+            }
+          ),
+          /* @__PURE__ */ r("div", { className: b.list, children: e.length > 0 ? /* @__PURE__ */ c(U, { children: [
+            A.length === 0 && /* @__PURE__ */ r("div", { className: b.empty, children: "No languages found" }),
+            A.map((l) => /* @__PURE__ */ r(
+              Et,
+              {
+                language: l,
+                showFlags: i,
+                showEnglishName: a && !!l.endonym && l.endonym !== l.name,
+                selected: (o == null ? void 0 : o.code) === l.code,
+                onClick: () => L(l.code)
+              },
+              l.code
+            ))
+          ] }) : Array.from({ length: t }).map((l, w) => /* @__PURE__ */ r("div", { className: b.placeholder }, w)) })
+        ] })
+      },
+      Z
+    )
+  ] });
+}, Rt = "_btn_1o64a_1", Ut = "_sm_1o64a_27", Tt = "_flag_1o64a_31", K = {
+  btn: Rt,
+  sm: Ut,
+  flag: Tt
+}, Ot = ({
+  text: e = "Language",
+  size: n = "lg",
+  onClick: t,
+  onMouseEnter: o,
   selectedLanguage: s,
-  onSelectedLanguageChange: o,
+  displaySelected: a = !1,
+  showFlag: i = !1
+}) => {
+  var v;
+  const d = a && s ? s.endonym || s.name : e, m = a && i && ((v = s == null ? void 0 : s.flagSvgDataUris) != null && v.length) ? s.flagSvgDataUris[0] : null, p = a && s;
+  return /* @__PURE__ */ r(
+    "button",
+    {
+      className: `${K.btn} ${n === "sm" ? K.sm : ""}`,
+      onClick: t,
+      onMouseEnter: o,
+      children: n === "lg" ? /* @__PURE__ */ c(U, { children: [
+        p && m ? /* @__PURE__ */ r("img", { className: K.flag, src: m, alt: "" }) : /* @__PURE__ */ r(te, { width: "18", height: "18" }),
+        /* @__PURE__ */ r("span", { children: d }),
+        /* @__PURE__ */ r($e, { width: "16", height: "16" })
+      ] }) : /* @__PURE__ */ c(U, { children: [
+        /* @__PURE__ */ r(te, { width: "18", height: "18" }),
+        p && m && /* @__PURE__ */ r("img", { className: K.flag, src: m, alt: "" })
+      ] })
+    }
+  );
+}, qt = "_wrapper_1qnc8_1", At = "_error_1qnc8_6", Ht = "_errorDetails_1qnc8_25", Q = {
+  wrapper: qt,
+  error: At,
+  errorDetails: Ht
+}, me = ({
+  staticData: e,
+  languages: n = [],
+  displayOptions: t = {},
+  loadOptions: o = {},
+  selectedLanguage: s,
+  onSelectedLanguageChange: a,
   onSelection: i
 }) => {
-  const [a, d] = y(null), [p, v] = y(!1), [g, m] = y(!1), w = s !== void 0, h = w ? s : a, k = b(
-    (N) => {
-      w || d(N), o == null || o(N);
+  const d = t.showEnglishName ?? !1, m = t.flagMode ?? "single", p = t.isModal ?? !0, v = t.placeholderText ?? "Language", M = t.displaySelected ?? !1, y = o.autoSelect ?? !1, [j, h] = k(null), [f, $] = k(!1), [N, q] = k(null), [Z, E] = k(null), [L, T] = k(!1), A = X(!1), l = s !== void 0, w = l ? s : j, F = D(async () => {
+    if (!(L || N || e)) {
+      if (!n || n.length === 0) {
+        E(new Error("No languages provided"));
+        return;
+      }
+      T(!0);
+      try {
+        const _ = await ie(n, t, o);
+        q(_), E(null);
+      } catch (_) {
+        E(_ instanceof Error ? _ : new Error(String(_)));
+      } finally {
+        T(!1);
+      }
+    }
+  }, [L, N, e, n, t, o]), Y = D(() => {
+    !e && !N && !L && F();
+  }, [e, N, L, F]), P = D(() => {
+    $((_) => !_), !e && !N && !L && F();
+  }, [e, N, L, F]), S = e ?? N, u = W(() => S ? Ee(S, m, S.flags) : [], [S, m]), I = W(() => w ? u.find((_) => _.code === w.code) ?? w : null, [w, u]);
+  O(() => {
+    y && !e && !N && !L && F();
+  }, [y]), O(() => {
+    if (y && !A.current && u.length > 0 && !w) {
+      const _ = be(), C = ke(_, u);
+      C && (A.current = !0, l || h(C), a == null || a(C), i == null || i(C));
+    }
+  }, [y, u, w, l, a, i]);
+  const V = D(
+    (_) => {
+      const C = u.find((G) => G.code === _);
+      C && (l || h(C), a == null || a(C), i == null || i(C));
     },
-    [w, o]
-  );
-  return !e || e.length === 0 ? (console.error("[LanguageSelector] No languages provided."), null) : /* @__PURE__ */ c("div", { className: se.wrapper, children: [
+    [l, u, a, i]
+  ), H = D(() => {
+    $(!1);
+  }, []);
+  return /* @__PURE__ */ c("div", { className: Q.wrapper, children: [
     /* @__PURE__ */ r(
-      ne,
+      Ot,
       {
-        onMouseEnter: () => m(!0),
-        onClick: () => v(!p),
-        size: t.buttonSize
+        onMouseEnter: Y,
+        onClick: P,
+        size: t.buttonSize,
+        text: v,
+        displaySelected: M,
+        selectedLanguage: I,
+        showFlag: m !== "none"
       }
     ),
-    /* @__PURE__ */ r(
-      te,
+    Z && /* @__PURE__ */ c("div", { className: Q.error, children: [
+      /* @__PURE__ */ r("p", { children: "Failed to load languages" }),
+      /* @__PURE__ */ r("p", { className: Q.errorDetails, children: Z.message }),
+      /* @__PURE__ */ r("button", { onClick: F, children: "Retry" }),
+      /* @__PURE__ */ r("hr", {}),
+      /* @__PURE__ */ r("button", { onClick: () => E(null), children: "Close" })
+    ] }),
+    p ? /* @__PURE__ */ r(
+      _t,
       {
-        preload: g,
-        isOpen: p,
-        onOpenChange: v,
-        selectedLanguage: h,
-        onSelectedLanguageChange: k,
-        onSelection: i,
-        languages: e,
-        displayOptions: t,
-        loadOptions: n
+        displayLanguages: u,
+        isLoading: L,
+        skeletonCount: n.length,
+        selectedEntry: I,
+        isOpen: f,
+        showEnglishName: d,
+        showFlags: m !== "none",
+        selectLanguage: V,
+        close: H
+      }
+    ) : /* @__PURE__ */ r(
+      It,
+      {
+        displayLanguages: u,
+        isLoading: L,
+        skeletonCount: n.length,
+        selectedEntry: I,
+        isOpen: f,
+        showEnglishName: d,
+        showFlags: m !== "none",
+        selectLanguage: V,
+        close: H
       }
     )
   ] });
-}, St = ({
+}, Vt = ({
+  languages: e,
+  displayOptions: n = {},
+  loadOptions: t = {},
+  selectedLanguage: o,
+  onSelectedLanguageChange: s,
+  onSelection: a
+}) => !e || e.length === 0 ? (console.error("[LanguageSelector] No languages provided."), null) : /* @__PURE__ */ r(
+  me,
+  {
+    languages: e,
+    displayOptions: n,
+    loadOptions: t,
+    selectedLanguage: o,
+    onSelectedLanguageChange: s,
+    onSelection: a
+  }
+), Jt = ({
   staticFileData: e,
-  selectedLanguage: t,
-  onSelectedLanguageChange: n,
-  onSelection: s,
-  displayOptions: o
+  selectedLanguage: n,
+  onSelectedLanguageChange: t,
+  onSelection: o,
+  displayOptions: s
 }) => {
-  const [i, a] = y(null), [d, p] = y(!1), { data: v, displayOptions: g } = O(
-    () => pe(e),
+  const { data: a, displayOptions: i } = W(
+    () => Ce(e),
     [e]
-  ), m = t !== void 0, w = m ? t : i, h = b(
-    (_) => {
-      m || a(_), n == null || n(_);
-    },
-    [m, n]
-  ), k = b(
-    (_) => {
-      h(_), s == null || s(_);
-    },
-    [h, s]
-  ), N = o ?? g ?? void 0, f = N == null ? void 0 : N.buttonSize;
-  return /* @__PURE__ */ c("div", { className: se.wrapper, children: [
-    /* @__PURE__ */ r(ne, { onClick: () => p(!d), size: f }),
-    /* @__PURE__ */ r(
-      te,
-      {
-        isOpen: d,
-        onOpenChange: p,
-        selectedLanguage: w,
-        onSelectedLanguageChange: h,
-        onSelection: k,
-        staticData: v,
-        displayOptions: N
-      }
-    )
-  ] });
+  );
+  return /* @__PURE__ */ r(
+    me,
+    {
+      staticData: a,
+      displayOptions: s ?? i ?? void 0,
+      selectedLanguage: n,
+      onSelectedLanguageChange: t,
+      onSelection: o
+    }
+  );
 };
 export {
-  ft as DropdownOption,
-  ee as FlagDisplay,
-  $t as LanguageDropdown,
-  rt as LanguageModal,
-  Be as LanguageOption,
-  It as LanguageSelector,
-  te as LanguageSelectorHandler,
-  St as LanguageSelectorStatic,
-  ne as LocalizeButton,
-  Ee as Modal,
-  Y as SearchInput,
-  Ke as SelectedLanguageDisplay,
-  ve as buildDisplayLanguages,
-  Dt as downloadStaticDataFile,
-  G as filterLanguages,
-  zt as generateStaticDataFile,
-  pe as loadDataFromFile,
-  X as svgToDataUri
+  Et as DropdownOption,
+  de as FlagDisplay,
+  It as LanguageDropdown,
+  _t as LanguageModal,
+  et as LanguageOption,
+  Vt as LanguageSelector,
+  me as LanguageSelectorHandler,
+  Jt as LanguageSelectorStatic,
+  Ot as LocalizeButton,
+  Me as Modal,
+  le as SearchInput,
+  at as SelectedLanguageDisplay,
+  Ee as buildDisplayLanguages,
+  Pt as downloadStaticDataFile,
+  ce as filterLanguages,
+  ke as findMatchingLanguage,
+  Zt as generateStaticDataFile,
+  be as getBrowserLocales,
+  Ce as loadDataFromFile,
+  ye as svgToDataUri
 };

@@ -112,13 +112,13 @@ export default function App() {
 				<LanguageSelector  languages={["en", "es", "fr"]} displayOptions={{flagMode: "none", buttonSize:"sm", isModal: false, showEnglishName: false}} />
 				<div class="embed-label">3 languages, no flags, dropdown, small</div>
 				<hr/>
-				<LanguageSelector  languages={["en", "es", "fr", "id","ja", "ko"]} displayOptions={{flagMode: "single", showEnglishName: false, isModal: false}} />
+				<LanguageSelector  languages={["en", "es", "fr", "id","ja", "ko"]} displayOptions={{flagMode: "single", showEnglishName: false, isModal: false, displaySelected:true}} />
 				<div class="embed-label">6 languages, single flag, no english name, dropdown</div>
 				<hr/>
-				<LanguageSelector  languages={["en", "es", "fr", "id", "zh-TW", "zh-CN", "pt-BR", "pt-PT", "sr-Latn", "sr-Cyrl"]} displayOptions={{flagMode: "single"}} />
+				<LanguageSelector loadOptions={{autoSelect:true}}  languages={["en", "es", "fr", "id", "zh-TW", "zh-CN", "pt-BR", "pt-PT", "sr-Latn", "sr-Cyrl"]} displayOptions={{flagMode: "single", isModal:true, placeholderText:"Localize", displaySelected:true}} />
 				<div class="embed-label">12 languages, single flag, modal</div>
 				<hr/>
-				<LanguageSelector  languages={["zh-Hant","zh-Hans-TW", "en-GB", "en-US", "sr-Latn", "sr-Cyrl", "id", "it", "es", "de", "fr", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "vi"]} displayOptions={{flagMode: "all"}} />
+				<LanguageSelector  languages={["zh-Hant","zh-Hans-TW", "en-GB", "en-US", "sr-Latn", "sr-Cyrl", "id", "it", "es", "de", "fr", "ja", "ko", "nl", "pl", "pt", "ru", "tr", "uk", "vi"]} displayOptions={{flagMode: "all", placeholderText:"Select Language", isModal:true}} />
 				<div class="embed-label">20 languages, multi flag, regions, and scripts</div>
 			</div>
 
