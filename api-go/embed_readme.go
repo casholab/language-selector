@@ -50,6 +50,9 @@ Configuration Attributes
 | flag-mode         | string  | "none"                       | "none", "single", or "all"           |
 | show-english-name | boolean | true                         | Show English name alongside endonym  |
 | button-size       | string  | "lg"                         | "sm" or "lg"                         |
+| placeholder-text  | string  | "Language"                   | Button text when nothing selected    |
+| display-selected  | boolean | false                        | Show selected language on button     |
+| auto-select       | boolean | false                        | Auto-select matching browser locale  |
 | api-url           | string  | "https://lsapi.casholab.com" | Custom API endpoint                  |
 | flag-load-mode    | string  | "multi"                      | "single" (all-flags) or "multi"      |
 | callback          | string  | (none)                       | Global function name to call on select|
@@ -76,13 +79,29 @@ Dropdown without flags:
 With callback:
 
   <script>
-    function onLanguageSelected(code) {
-      console.log('Selected:', code);
+    function onLanguageSelected(language) {
+      console.log('Selected:', language.code, language.endonym);
     }
   </script>
   <div casholab-ls 
     languages="en,es,fr"
     callback="onLanguageSelected"
+  ></div>
+
+Display selected language on button:
+
+  <div casholab-ls 
+    languages="en,es,fr,de"
+    display-selected="true"
+    placeholder-text="Choose language"
+  ></div>
+
+Auto-select browser locale:
+
+  <div casholab-ls 
+    languages="en,es,fr,de,ja,zh-Hans"
+    auto-select="true"
+    display-selected="true"
   ></div>
 
 Custom API endpoint:
@@ -110,6 +129,9 @@ Features
 
 - Supports 7000+ languages, 400+ endonyms, regions, scripts
 - Dark mode and light mode support
+- Auto-select browser locale on load
+- Display selected language name and flag on button
+- Customizable placeholder text
 - Efficient lazy loading (data fetched on hover/open)
 - No dependencies
 - Under 40kB load size
