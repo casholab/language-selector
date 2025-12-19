@@ -1,18 +1,18 @@
 <script lang="ts">
-	import type { LanguageCode, DisplayOptions, LoadOptions } from '../types.ts';
+	import type { DisplayOptions, LoadOptions, DisplayLanguage } from '../types.ts';
 	import LanguageSelectorHandler from './LanguageSelectorHandler.svelte';
 	let {
 		languages,
 		displayOptions = {},
 		loadOptions = {},
-		selectedLanguage = $bindable<LanguageCode | null>(null),
+		selectedLanguage = $bindable<DisplayLanguage | null>(null),
 		onSelection = () => {}
 	}: {
 		languages: string[];
 		displayOptions?: DisplayOptions;
 		loadOptions?: LoadOptions;
-		selectedLanguage?: LanguageCode | null;
-		onSelection?: (language: LanguageCode) => void;
+		selectedLanguage?: DisplayLanguage | null;
+		onSelection?: (language: DisplayLanguage) => void;
 	} = $props();
 
 </script>

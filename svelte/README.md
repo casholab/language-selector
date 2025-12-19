@@ -16,47 +16,62 @@ pnpm install language-selector-svelte
 - Efficient loading. 
 - Batch loading for sequential fetch environments.
 - Customizable display options.
+- Auto-select browser locale.
+- Display selected language on button with flag.
 
 ## Basic Usage
 
 ```svelte
 
 <script>
-    import LanguageSelectorEmbed from "$lib/components/LanguageSelectorEmbed.svelte";
+    import { LanguageSelector } from "language-selector-svelte";
+    import type { DisplayLanguage } from "language-selector-svelte";
     
-    //bindable state
-    let selectedLanguage=$state<string | null>(null);
+    // bindable state
+    let selectedLanguage = $state<DisplayLanguage | null>(null);
     
-    //callback function
-    function handleSelection(language: string) {
-        console.log("Selected Language: ", language);
-        // do something with the language code
+    // callback function
+    function handleSelection(language: DisplayLanguage) {
+        console.log("Selected Language: ", language.code, language.endonym);
     }
 </script>
 
 <LanguageSelector languages={["en", "es", "fr", "de"]} onSelection={handleSelection}/>
     
-<LanguageSelectorEmbed 
+<LanguageSelector 
     bind:selectedLanguage
     languages={["en", "es", "fr", "id", "zh-Hans", "zh-TW", "sr-Cryl-RS"]} 
-    displayOptions={{isModal:false, flagMode:"all", buttonSize:"sm", showEnglishName:true}} 
+    displayOptions={{isModal: false, flagMode: "all", buttonSize: "sm", showEnglishName: true}} 
     loadOptions={{apiUrl: "https://customapi.com", flagLoadMode: "single"}}
 /> 
 
-<div>Selected Language: {selectedLanguage}</div>
+<div>Selected: {selectedLanguage?.code} - {selectedLanguage?.endonym}</div>
 ```
+
 Options Example
 ```svelte
-<LanguageSelectorEmbed bind:selectedLanguage
-languages={["en", "es", "fr", "id", "zh-Hans", "zh-TW"](BPC-47 language Codes (xx-Xxxx-Xx-xyz | language-script-region-variants/extensions))} 
-displayOptions={{isModal:false||true(modal or dropdown), flagMode:"all"||"single"||"none", buttonSize:"sm"||"lg", showEnglishName:true||false}} 
-loadOptions={{apiUrl?: "https://customapi.com", flagLoadMode?: "single" | "multi"}}
+<LanguageSelector 
+    bind:selectedLanguage
+    languages={["en", "es", "fr", "id", "zh-Hans", "zh-TW"]}
+    displayOptions={{
+        isModal: false,           // modal or dropdown
+        flagMode: "all",          // "all" | "single" | "none"
+        buttonSize: "sm",         // "sm" | "lg"
+        showEnglishName: true,    // show English name alongside native
+        placeholderText: "Language",  // button text when nothing selected
+        displaySelected: true     // show selected language on button
+    }} 
+    loadOptions={{
+        apiUrl: "https://customapi.com",
+        flagLoadMode: "single",   // "single" | "multi"
+        autoSelect: true          // auto-select browser locale
+    }}
 />
 ```
 
 ### languages
-Uses bcp-47 language codes (although also has falls back for names and endonyms)\
-(xx-Xxxx-Xx-xyz | language-script-region-variants/extensions)
+Uses bcp-47 language codes (with fallback support for names and endonyms)\
+(xx-Xxxx-XX-xyz | language-script-region-variants/extensions)
 example : "en", "es", "zh-TW", "zh-Hans-CN" 
 example with regions: "es-CO", "es-ES"
 example with scripts: "en-Latn", "es-Latn", "sr-Latn", "sr-Cyrl"
@@ -66,13 +81,23 @@ https://developer.mozilla.org/en-US/docs/Glossary/BCP_47_language_tag for more i
 
 ### bindable prop
 
-selectedLanguage: LanguageCode | null
+selectedLanguage: DisplayLanguage | null
+
+The `DisplayLanguage` object contains:
+- `code`: BCP-47 language code
+- `name`: English name
+- `endonym`: Native name
+- `regionNameEnglish?`: English region name
+- `regionNameNative?`: Native region name
+- `scriptNameEnglish?`: English script name
+- `scriptNameLocal?`: Native script name
+- `flagSvgDataUris`: Array of flag SVG data URIs
 
 ### callback function
 
-onSelection: (language: LanguageCode) => void
+onSelection: (language: DisplayLanguage) => void
 
-returns back the bcp-47 language code of the selected language
+Returns the full DisplayLanguage object for the selected language.
 
 
 ### options
@@ -81,17 +106,31 @@ returns back the bcp-47 language code of the selected language
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| isModal | boolean | true | Whether to show the modal or dropdown |
-| flagMode | string | "all" | The flag mode to use | "none", "single", "all" |
-| buttonSize | string | "lg" | The button size to use | "sm", "lg" |
-| showEnglishName | boolean | true | Whether to show the english names |
+| isModal | boolean | true | Show as modal overlay or inline dropdown |
+| flagMode | "none" \| "single" \| "all" | "single" | How flags are displayed |
+| buttonSize | "sm" \| "lg" | "lg" | Button size |
+| showEnglishName | boolean | false | Show English name alongside native name |
+| placeholderText | string | "Language" | Button text when nothing selected |
+| displaySelected | boolean | false | Show selected language name and flag on button |
 
 #### loadOptions
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| apiUrl | string | "https://lsapi.casholab.com" | The api url to use |
-| flagLoadMode | FlagLoadMode: "single" \\ "multi  | The flag load mode to use |
+| apiUrl | string | "https://lsapi.casholab.com" | API endpoint URL |
+| flagLoadMode | "single" \| "multi" | "multi" | Load flags individually or batch |
+| autoSelect | boolean | false | Auto-select matching browser locale on mount |
 
+### Utility Functions
+
+```typescript
+import { getBrowserLocales, findMatchingLanguage } from "language-selector-svelte";
+
+// Get browser's preferred locales
+const locales = getBrowserLocales(); // ["en-US", "en", "fr"]
+
+// Find matching language from available options
+const match = findMatchingLanguage(locales, displayLanguages);
+```
 
 ## Configuration
 
@@ -125,7 +164,7 @@ https://github.com/casholab/language-selector/svelte/issues
 
 ## Styling
 
-You can override styling by looking at the source css file and using #important to override the class. Or you can manually update the css. 
+You can override styling by looking at the source css file and using !important to override the class. Or you can manually update the css. 
 
 ### fonts
 Fonts are not included but we recommend making sure your font supports the scripts and languages you are using.
@@ -135,7 +174,7 @@ https://fonts.google.com/noto/sans/
 
 ### colors
 
-You can override colors by looking at the source css file and using #important to override the color. Or you can manually update the css.
+You can override colors by looking at the source css file and using !important to override the color. Or you can manually update the css.
 
 
 

@@ -1,28 +1,26 @@
 <script lang="ts">
-	import type { LanguageCode, DisplayLanguage } from '../types.ts';
+	import type { DisplayLanguage, DisplayOptions } from '../types.ts';
 	import { filterLanguages } from '../language-selector.ts';
 	import SearchInput from './SearchInput.svelte';
 	import DropdownOption from './DropdownOption.svelte';
 
 	let {
-		languagesData= [],
+		languagesData = [],
 		isLoading = false,
-		selectedEntry = null,
+		selectedLanguage = $bindable<DisplayLanguage | null>(null),
 		isOpen = $bindable(false),
-		showEnglishName = true,
-		showFlags = false,
-		selectLanguage,
-		close
+		displayOptions = {},
+		onSelection = () => {}
 	}: {
 		languagesData: DisplayLanguage[];
 		isLoading?: boolean;
-		selectedEntry?: DisplayLanguage | null;
+		selectedLanguage?: DisplayLanguage | null;
 		isOpen?: boolean;
-		showEnglishName?: boolean;
-		showFlags?: boolean;
-		selectLanguage: (code: LanguageCode) => void;
-		close: () => void;
+		displayOptions?: DisplayOptions;
+		onSelection?: (language: DisplayLanguage) => void;
 	} = $props();
+
+	let showFlags = $derived(displayOptions.flagMode !== 'none');
 
 	let searchTerm = $state('');
 	let openUpward = $state(false);
@@ -31,12 +29,13 @@
 	let pixelRef: HTMLSpanElement;
 
 	function handleClose() {
-		close();
+		isOpen = false;
 		searchTerm = '';
 	}
 
-	function handleSelect(code: LanguageCode) {
-		selectLanguage(code);
+	function handleSelect(language: DisplayLanguage) {
+		selectedLanguage = language;
+		onSelection(language);
 		handleClose();
 	}
 
@@ -131,9 +130,9 @@
 						<DropdownOption
 							{language}
 							{showFlags}
-							showEnglishName={showEnglishName && !!language.endonym && language.endonym !== language.name}
-							selected={selectedEntry?.code === language.code}
-							onclick={() => handleSelect(language.code)}
+							showEnglishName={displayOptions.showEnglishName}
+							selected={selectedLanguage?.code === language.code}
+							onclick={() => handleSelect(language)}
 						/>
 					{/each}
 				{:else}

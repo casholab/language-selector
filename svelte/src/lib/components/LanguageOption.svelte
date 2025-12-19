@@ -39,6 +39,7 @@
 		{/if}
 	</div>
 	{#if hasVariant}
+	<div class="ls-option-meta-container">
 		{#if language.regionNameNative || language.regionNameEnglish}
 			<div class="ls-option-meta">
 				<div class="ls-meta-native">
@@ -62,14 +63,15 @@
 					</div>
 				{/if}
 			</div>
-		{/if}
+			{/if}
+		</div>
 	{/if}
 </button>
 
 <style>
 	.ls-option {
 		display: flex;
-		align-items: end;
+		align-items: center;
 		justify-content: start;
 		gap: 0.75rem;
 		padding: var(--ls-padding);
@@ -78,8 +80,13 @@
 		border-radius: var(--ls-radius);
 		cursor: pointer;
 		text-align: left;
+		max-width: 260px;
+		overflow:hidden;
 		width: 100%;
-		max-width: 360px;
+	}
+
+	@media(max-width:1000px){
+		.ls-option{max-width: unset;}
 	}
 
 	.ls-option:hover {
@@ -111,10 +118,16 @@
 		font-size: 0.8125rem;
 		color: var(--ls-fg-muted);
 	}
-
-	.ls-option-meta {
+	.ls-option-meta-container{
 		display: flex;
 		flex-direction: column;
+		gap:.2rem;
+	}
+	.ls-option-meta {
+		display: flex;
+		/* flex-direction: column; */
+		flex-direction: row;
+		gap:.5em;
 		justify-content: flex-start;
 		min-width: 50px;
 	}
@@ -122,7 +135,7 @@
 	.ls-meta-native {
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--ls-fg);
+		color: color-mix(in srgb, var(--ls-fg) 60%, gray 40%);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;

@@ -16,7 +16,7 @@ async function loadDataFromServer(
 	languages: string[],
 	options: ServerLoadOptions = {}
 ): Promise<LanguageLookupResult> {
-	const { flagDisplayMode = 'none', apiUrl = DEFAULT_API_URL } = options;
+	const { flagDisplayMode = 'single', apiUrl = DEFAULT_API_URL } = options;
 
 	const params = new URLSearchParams({
 		l: languages.join(','),

@@ -1,36 +1,33 @@
 <script lang="ts">
-	import type { LanguageCode, LanguageLookupResult, DisplayOptions, LoadOptions, DisplayLanguage } from '../types.ts';
-	import { buildDisplayLanguages } from '../language-selector.ts';
+	import { onMount } from 'svelte';
+	import type { LanguageLookupResult, DisplayOptions, LoadOptions, DisplayLanguage } from '../types.ts';
+	import { buildDisplayLanguages, getBrowserLocales, findMatchingLanguage } from '../language-selector.ts';
 	import { loadLanguageData } from '../loader.ts';
 	import '$lib/language-selector.css';
 	import LanguageModal from './LanguageModal.svelte';
 	import LanguageDropdown from './LanguageDropdown.svelte';
-    import LocalizeButton from './LocalizeButton.svelte';
+	import LocalizeButton from './LocalizeButton.svelte';
 
 	let {
 		staticData,
 		languages = [],
 		displayOptions = {},
 		loadOptions = {},
-		selectedLanguage = $bindable<LanguageCode | null>(null),
-		onSelection = () => {},
+		selectedLanguage = $bindable<DisplayLanguage | null>(null),
+		onSelection = () => {}
 	}: {
 		languages?: string[];
 		staticData?: LanguageLookupResult;
 		displayOptions?: DisplayOptions;
 		loadOptions?: LoadOptions;
-		selectedLanguage?: LanguageCode | null;
-		onSelection?: (language: LanguageCode) => void;
+		selectedLanguage?: DisplayLanguage | null;
+		onSelection?: (language: DisplayLanguage) => void;
 	} = $props();
-
-	let showEnglishName = $derived(displayOptions.showEnglishName ?? true);
-	let flagMode = $derived(displayOptions.flagMode ?? 'none');
-	let isModal = $derived(displayOptions.isModal ?? true);
 
 	let fetchedData = $state<LanguageLookupResult | null>(null);
 	let error = $state<Error | null>(null);
 	let isFetching = $state(false);
-	let isOpen=$state(false)
+	let isOpen = $state(false);
 
 	async function loadData() {
 		if (isFetching || fetchedData || staticData) return;
@@ -44,38 +41,42 @@
 			error = null;
 		} catch (e) {
 			error = e instanceof Error ? e : new Error(String(e));
-		}finally{
-			isFetching=false;
+		} finally {
+			isFetching = false;
 		}
 	}
 
-
 	let languagesData = $derived(staticData ?? fetchedData);
 
-	
 	let displayLanguages = $derived.by((): DisplayLanguage[] => {
 		if (!languagesData) return [];
-		return buildDisplayLanguages(languagesData, flagMode, languagesData.flags);
+		return buildDisplayLanguages(languagesData, displayOptions.flagMode ?? 'single', languagesData.flags);
 	});
 
-	let selectedEntry = $derived.by((): DisplayLanguage | null => {
-		if (!selectedLanguage) return null;
-		return displayLanguages.find((l) => l.code === selectedLanguage) ?? null;
+
+	onMount(() => {
+		if (loadOptions.autoSelect && !staticData) {
+			loadData().then(() => {
+				if (loadOptions.autoSelect && displayLanguages.length > 0 && !selectedLanguage) {
+					const browserLocales = getBrowserLocales();
+					const match = findMatchingLanguage(browserLocales, displayLanguages);
+					if (match) {
+						selectedLanguage = match;
+						onSelection(match);
+					}
+				}
+			});
+		}
 	});
-
-	function selectLanguage(code: LanguageCode) {
-		selectedLanguage = code;
-		onSelection(code);
-	}
-
-	function close() {
-		isOpen = false;
-	}
 </script>
 
-
 <div class="ls-embed-wrapper">
-	<LocalizeButton onmouseenter={loadData} onclick={() => { isOpen = !isOpen; loadData(); }} size={displayOptions.buttonSize} />
+	<LocalizeButton
+		onmouseenter={loadData}
+		onclick={() => { isOpen = !isOpen; loadData(); }}
+		{displayOptions}
+		{selectedLanguage}
+	/>
 	{#if error}
 		<div class="ls-error">
 			<p>Failed to load languages</p>
@@ -83,30 +84,25 @@
 			<button onclick={()=>loadData()}>Retry</button>
 			<hr/>
 			<button onclick={()=>error=null}>Close</button>
-			
 		</div>
 	{/if}
-	{#if isModal}
+	{#if displayOptions.isModal}
 		<LanguageModal
 			languagesData={displayLanguages}
 			isLoading={isFetching}
-			{selectedEntry}
+			bind:selectedLanguage
 			bind:isOpen
-			{showEnglishName}
-			showFlags={flagMode !== 'none'}
-			{selectLanguage}
-			{close}
+			{displayOptions}
+			{onSelection}
 		/>
 	{:else}
 		<LanguageDropdown
-			{close}
+			bind:isOpen
 			languagesData={displayLanguages}
 			isLoading={isFetching}
-			bind:isOpen
-			{showEnglishName}
-			showFlags={flagMode !== 'none'}
-			{selectLanguage}
-			{selectedEntry}
+			{displayOptions}
+			bind:selectedLanguage
+			{onSelection}
 		/>
 	{/if}
 </div>

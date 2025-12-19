@@ -10,7 +10,7 @@
 		"language-selector",
 		"casholab"
 	],
-	"version": "1.0.5",
+	"version": "2.0.2",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",

@@ -17,8 +17,12 @@
 </script>
 
 <button class="ls-dropdown-option" class:selected {onclick} type="button">
-	{#if showFlags && language.flagSvgDataUris.length > 0}
-		<img class="ls-flag-sm" src={language.flagSvgDataUris[0]} alt="" />
+	{#if showFlags}
+		<span class="ls-flag-wrapper">
+			{#if language.flagSvgDataUris.length > 0}
+				<img class="ls-flag-sm" src={language.flagSvgDataUris[0]} alt="" />
+			{/if}
+		</span>
 	{/if}
 	<div class="ls-dropdown-option-text">
 		<span class="ls-dropdown-native">{language.endonym || language.name}</span>
@@ -29,23 +33,29 @@
 	<div class="ls-dropdown-variant-container">
 	{#if language.scriptNameLocal || language.scriptNameEnglish}
 		<span class="ls-dropdown-variant">
-			{language.scriptNameLocal} 
-			{#if language.scriptNameLocal && language.scriptNameEnglish && language.scriptNameLocal.toLowerCase() !== language.scriptNameEnglish.toLowerCase()}
-				|	
-			{/if}
-			{#if language.scriptNameEnglish && (!language.scriptNameLocal || language.scriptNameLocal.toLowerCase() !== language.scriptNameEnglish.toLowerCase())}
-				{language.scriptNameEnglish}
+			{#if showEnglishName}
+				{language.scriptNameLocal}
+				{#if language.scriptNameLocal && language.scriptNameEnglish && language.scriptNameLocal.toLowerCase() !== language.scriptNameEnglish.toLowerCase()}
+					| {language.scriptNameEnglish}
+				{:else if !language.scriptNameLocal && language.scriptNameEnglish}
+					{language.scriptNameEnglish}
+				{/if}
+			{:else}
+				{language.scriptNameLocal || language.scriptNameEnglish}
 			{/if}
 		</span>
 	{/if}
 	{#if language.regionNameNative || language.regionNameEnglish}
 		<span class="ls-dropdown-variant">
-			{language.regionNameNative} 
-			{#if language.regionNameNative && language.regionNameEnglish && language.regionNameNative.toLowerCase() !== language.regionNameEnglish.toLowerCase()}
-				|	
-			{/if}
-			{#if language.regionNameEnglish && (!language.regionNameNative || language.regionNameNative.toLowerCase() !== language.regionNameEnglish.toLowerCase())}
-				{language.regionNameEnglish}
+			{#if showEnglishName}
+				{language.regionNameNative}
+				{#if language.regionNameNative && language.regionNameEnglish && language.regionNameNative.toLowerCase() !== language.regionNameEnglish.toLowerCase()}
+					| {language.regionNameEnglish}
+				{:else if !language.regionNameNative && language.regionNameEnglish}
+					{language.regionNameEnglish}
+				{/if}
+			{:else}
+				{language.regionNameNative || language.regionNameEnglish}
 			{/if}
 		</span>
 	{/if}
@@ -78,6 +88,14 @@
 
 	.ls-dropdown-option.selected {
 		background: var(--ls-bg-selected);
+	}
+
+	.ls-flag-wrapper {
+		width: 40px;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
 	}
 
 	.ls-flag-sm {

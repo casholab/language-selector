@@ -59,6 +59,8 @@ export interface DisplayOptions {
 	showEnglishName?: boolean;
 	flagMode?: FlagDisplayMode;
 	buttonSize?: 'sm' | 'lg';
+	placeholderText?: string;
+	displaySelected?: boolean;
 }
 
 export interface StaticLanguageFileMetadata {
@@ -77,6 +79,7 @@ export type FlagLoadMode = 'single' | 'multi';
 export interface LoadOptions {
 	apiUrl?: string;
 	flagLoadMode?: FlagLoadMode;
+	autoSelect?: boolean;
 }
 
 export interface ServerLoadOptions {

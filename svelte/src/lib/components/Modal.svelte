@@ -101,9 +101,10 @@
     }
     
     .ls-modal-body {
+        box-sizing: border-box;
         height: fit-content;
         max-width: 90%;
-        width: 800px;
+        width: 840px;
         pointer-events: all;
         position: relative;
         background: var(--ls-modal-bg);

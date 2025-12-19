@@ -1,7 +1,5 @@
 import type { LanguageLookupResult, FlagDisplayMode, DisplayLanguage } from './types.ts';
 
-
-
 export interface ParsedTag {
 	lang: string;
 	script?: string;
@@ -90,7 +88,7 @@ export function buildDisplayLanguages(
 			scriptNameLocal,
 			flagSvgDataUris
 		};
-	});
+	}).sort((a, b) => a.endonym.localeCompare(b.endonym));
 }
 
 export function filterLanguages(languages: DisplayLanguage[], searchTerm: string): DisplayLanguage[] {
@@ -106,5 +104,44 @@ export function filterLanguages(languages: DisplayLanguage[], searchTerm: string
 			(lang.scriptNameEnglish && lang.scriptNameEnglish.toLowerCase().includes(term)) ||
 			(lang.scriptNameLocal && lang.scriptNameLocal.toLowerCase().includes(term))
 	);
+}
+
+export function getBrowserLocales(): string[] {
+	if (typeof navigator === 'undefined') return [];
+	return navigator.languages?.slice() ?? (navigator.language ? [navigator.language] : []);
+}
+
+export function findMatchingLanguage(
+	browserLocales: string[],
+	availableLanguages: DisplayLanguage[]
+): DisplayLanguage | null {
+	const availableCodes = availableLanguages.map((l) => l.code.toLowerCase());
+	const availableMap = new Map(availableLanguages.map((l) => [l.code.toLowerCase(), l]));
+
+	for (const browserLocale of browserLocales) {
+		const normalized = browserLocale.toLowerCase();
+
+		// Exact match
+		if (availableMap.has(normalized)) {
+			return availableMap.get(normalized)!;
+		}
+
+		// Try without region (e.g., "en-US" -> "en")
+		const parsed = parseTag(browserLocale);
+		const langOnly = parsed.lang.toLowerCase();
+		if (availableMap.has(langOnly)) {
+			return availableMap.get(langOnly)!;
+		}
+
+		// Try matching just the language part against available codes
+		for (const code of availableCodes) {
+			const parsedAvailable = parseTag(code);
+			if (parsedAvailable.lang.toLowerCase() === langOnly) {
+				return availableMap.get(code)!;
+			}
+		}
+	}
+
+	return null;
 }
 

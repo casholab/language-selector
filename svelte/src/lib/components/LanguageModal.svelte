@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Modal from './Modal.svelte';
 	import LanguageIcon from '$lib/icons/LanguageIcon.svelte';
-	import type { LanguageCode, DisplayLanguage } from '../types.ts';
+	import type { DisplayLanguage, DisplayOptions } from '../types.ts';
 	import { filterLanguages } from '../language-selector.ts';
 	import SearchInput from './SearchInput.svelte';
 	import LanguageOption from './LanguageOption.svelte';
@@ -10,32 +10,32 @@
 	let {
 		languagesData = [],
 		isLoading = false,
-		selectedEntry = null,
+		selectedLanguage = $bindable<DisplayLanguage | null>(null),
 		isOpen = $bindable(false),
-		showEnglishName = true,
-		showFlags = false,
-		selectLanguage,
-		close
+		displayOptions = {},
+		onSelection = () => {}
 	}: {
 		languagesData: DisplayLanguage[];
 		isLoading?: boolean;
-		selectedEntry?: DisplayLanguage | null;
+		selectedLanguage?: DisplayLanguage | null;
 		isOpen?: boolean;
-		showEnglishName?: boolean;
-		showFlags?: boolean;
-		selectLanguage: (code: LanguageCode) => void;
-		close: () => void;
+		displayOptions?: DisplayOptions;
+		onSelection?: (language: DisplayLanguage) => void;
 	} = $props();
+
+	let showEnglishName = $derived(displayOptions.showEnglishName ?? false);
+	let showFlags = $derived(displayOptions.flagMode !== 'none');
 
 	let searchTerm = $state('');
 
 	function handleClose() {
-		close();
+		isOpen = false;
 		searchTerm = '';
 	}
 
-	function handleSelect(code: LanguageCode) {
-		selectLanguage(code);
+	function handleSelect(language: DisplayLanguage) {
+		selectedLanguage = language;
+		onSelection(language);
 		handleClose();
 	}
 
@@ -56,11 +56,11 @@
 					</div>
 				{/if}
 
-				{#if selectedEntry}
+				{#if selectedLanguage}
 					<SelectedLanguageDisplay
-						language={selectedEntry}
+						language={selectedLanguage}
 						{showFlags}
-						showEnglishName={showEnglishName && !!selectedEntry.endonym && selectedEntry.endonym !== selectedEntry.name}
+						showEnglishName={showEnglishName && !!selectedLanguage.endonym && selectedLanguage.endonym !== selectedLanguage.name}
 					/>
 					<hr />
 				{/if}
@@ -74,8 +74,8 @@
 								{language}
 								{showFlags}
 								showEnglishName={showEnglishName && !!language.endonym && language.endonym !== language.name}
-								selected={selectedEntry?.code === language.code}
-								onclick={() => handleSelect(language.code)}
+								selected={selectedLanguage?.code === language.code}
+								onclick={() => handleSelect(language)}
 							/>
 						{/each}
 					{:else}
@@ -154,7 +154,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: 0.5rem 1rem;
+		gap: 0.5rem;
 		scrollbar-color: var(--ls-border) transparent;
 	}
 
@@ -164,7 +164,7 @@
 		border: 1px solid var(--ls-border);
 		border-radius: var(--ls-radius);
 		width: 100%;
-		max-width: 360px;
+		max-width: 260px;
 		height: 58px;
 	}
 </style>

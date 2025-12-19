@@ -1,26 +1,45 @@
 <script lang="ts">
+	import type { DisplayLanguage, DisplayOptions } from '../types.ts';
 	import LanguageIcon from '$lib/icons/LanguageIcon.svelte';
 	import ChevronDownIcon from '$lib/icons/ChevronDownIcon.svelte';
 	import '$lib/language-selector.css';
 
 	let {
-		text = 'Localize',
-		size = 'lg',
+		displayOptions = {},
 		onclick = () => {},
-		onmouseenter = () => {}
+		onmouseenter = () => {},
+		selectedLanguage = null
 	}: {
-		text?: string;
-		size?: 'sm' | 'lg';
+		displayOptions?: DisplayOptions;
 		onclick?: () => void;
-		onmouseenter?: ()=> void;
+		onmouseenter?: () => void;
+		selectedLanguage?: DisplayLanguage | null;
 	} = $props();
+
+	let size = $derived(displayOptions.buttonSize ?? 'lg');
+	let text = $derived(displayOptions.placeholderText ?? 'Language');
+	let displaySelected = $derived(displayOptions.displaySelected ?? false);
+	let showFlag = $derived(displayOptions.flagMode !== 'none');
+
+	let displayText = $derived(displaySelected && selectedLanguage ? selectedLanguage.endonym || selectedLanguage.name : text);
+	let flagSrc = $derived(showFlag && selectedLanguage?.flagSvgDataUris?.length ? selectedLanguage.flagSvgDataUris[0] : null);
+	let hasSelection = $derived(displaySelected && selectedLanguage);
 </script>
 
 <button class="ls-btn" class:sm={size === 'sm'} {onclick} {onmouseenter}>
-	<LanguageIcon width="18" height="18" />
 	{#if size === 'lg'}
-		<span>{text}</span>
+		{#if hasSelection && flagSrc}
+			<img class="ls-btn-flag" src={flagSrc} alt="" />
+		{:else}
+			<LanguageIcon width="18" height="18" />
+		{/if}
+		<span>{displayText}</span>
 		<ChevronDownIcon width="16" height="16" />
+	{:else}
+		<LanguageIcon width="18" height="18" />
+		{#if hasSelection && flagSrc}
+			<img class="ls-btn-flag" src={flagSrc} alt="" />
+		{/if}
 	{/if}
 </button>
 
@@ -53,5 +72,13 @@
 
 	.ls-btn.sm {
 		padding: 0.5rem;
+	}
+
+	.ls-btn-flag {
+		width: 20px;
+		height: 14px;
+		object-fit: contain;
+		border-radius: 2px;
+		filter: drop-shadow(0 0 1px var(--ls-border));
 	}
 </style>
